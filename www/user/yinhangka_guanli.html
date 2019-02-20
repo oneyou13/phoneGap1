@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>管理银行卡</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			.tran{
+				-webkit-transition:left 0.2s linear;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="管理银行卡">
+				
+			</header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+					<div class="mt-15">
+						<div v-for="(ret,index) in retData" @touchstart="touchStart(ret,event)"  @touchmove="touchMove(ret,event)" @touchend="touchEnd(ret,event)" class="w-100-v p-r h-40 bb-1-F5F5F5 o-h">
+							<div :style="{'left':ret.left+'px'}" class="h-40 w-123-v d-wb wba-c p-a t-0 tran">
+								<div  class="wbf-1 bc-fff pl-15 d-wb wba-c h-40 ">
+									<img src="../images/qq.png" class="h-19 w-19 mr-3" >
+									<div class="fs-15 c-666">
+										{{ret.type}}
+									</div>
+									<div class="fs-10 c-CCAC67 ml-4">
+										{{ret.bank_card}}
+									</div>
+									<div class="wbf-1">
+										
+									</div>
+								</div>
+								<div @click="ajaxDataFun1(ret.id,index)" class="bc-E1255B h-40 w-80 d-wb wb-c c-fff fw-800 fs-15">
+									<img src="../images/user/icon_dele.png" class="h-15 mr-5">
+									删除
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="h-20 d-wb wba-c wbp-e c-666 fs-10 p-0014 mt-10">
+						<img src="../images/qq.png" class="h-10 mr-2" >
+						左滑删除
+					</div>
+					<div @click="openWin('tianjiayinghangka')" class="w-345 h-210  m-0a mt-50 p-r">
+						<img src="../images/user/add_yinghangka%201.png" class="w-345 h-210 p-a l-0 t-0">
+						<div class="p-a b-22 r-16">
+							<div class="fs-24 fw-800">
+								添加银行卡
+							</div>
+							<div class="fs-15 c-999 fw-800  wb-ba">
+								添加银行卡后即可进行转出<br />
+								提款，至多3张。
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					retData:[
+// 						{
+// 						left:0,
+// 						start:0,//计算拉得时候需要的数据
+// 						initLeft:0,//计算方向的数据
+// 						}
+					],
+					leftMax:0
+				},
+				mounted: function() {
+					this.leftMax = -document.documentElement.clientWidth / 37.5 *8;
+					this.ajaxDataFun();
+				},
+				methods: {
+					touchStart:function(ret,ev){
+						ret.start=ev.targetTouches[0].clientX;
+						ret.initLeft=ret.left;
+						ev.target.parentNode.style.webkitTransitionDuration = "0s"
+					},
+					touchMove:function(ret,ev){
+						ret.left += (ev.targetTouches[0].clientX-ret.start);
+						if(ret.left<=this.leftMax){
+							ret.left = this.leftMax;
+						}
+						if(ret.left>0){
+							ret.left  = 0
+						}
+						ret.start=ev.targetTouches[0].clientX;
+					},
+					touchEnd:function(ret,ev){
+						ev.target.parentNode.style.webkitTransitionDuration = "0.2s";
+						if(ret.left <= ret.initLeft && ret.left!=0){
+							ret.left = this.leftMax;
+						}else{
+							ret.left = 0 ;
+						}
+					},
+					ajaxDataFun:function(){  //银行卡列表
+						apiajax({
+							url:"/api/user/bank_list",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret.data.map(function(value,index){
+									value.left=0;
+									value.start=0;
+									value.initLeft=0;
+									return value
+								});
+							}
+						},1);
+					},
+					ajaxDataFun1:function(id,index){  //删除银行
+						apiajax({
+							url:"/api/user/"+id+"/bank",
+							method:"delete",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData.splice(index,1)
+							}
+						},1);
+					},
+					
+					openWin:function(winName){
+						if(winName=="tianjiayinghangka"){
+							window.location.href="./ziliaoChange.html?nowType=2&canNext=false"
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

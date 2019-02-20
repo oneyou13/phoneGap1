@@ -1,60 +1,613 @@
 <!DOCTYPE html>
-<!--
-    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
-    <!-- Good default declaration:
-    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-        * Enable inline JS: add 'unsafe-inline' to default-src
-        * Enable eval(): add 'unsafe-eval' to default-src
-    * Create your own at http://cspisawesome.com
-    -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+	<head>
+		<meta charset="utf-8">
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="0">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>首页</title>
+		<link href="css/swiper.min.css" rel="stylesheet"/>
+		<link href="css/api.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<script src="js/swiper.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			.swiper-pagination-bullet-active{
+				background-color: #e5e5e5;
+			}
+			::-webkit-scrollbar{
+				display: none;
+			}
+		 /* 	.moveTop{
+				-webkit-animation: moveTopAnimation linear 25s infinite;
+				animation: moveTopAnimation linear 25s infinite;
+			}
+			.moveLeft{
+				-webkit-animation: moveLeftAnimation linear 25s infinite;
+				animation: moveLeftAnimation linear 25s infinite;
+			} */
+			@-webkit-keyframes moveLeftAnimation{
+				from{
+					margin-left:0px;
+				}
+				to{
+					margin-left:-750px;
+				}
+			}
+			@-webkit-keyframes moveTopAnimation{
+				from{
+					margin-top:0px;
+				}
+				to{
+					margin-top:-750px;
+				}
+			}
+			.scroll{
+				-webkit-transition: bottom 1s;
+				transition: bottom 1s;
+			}
+		</style>
+		<style rem="10">
 
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <title>Hello World</title>
-</head>
+		</style>
+	</head>
 
-<body>
-    <div class="app">
-        <h1>PhoneGap</h1>
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
-        </div>
-    </div>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        app.initialize();
-    </script>
-</body>
-
+	<body>
+		<div v-cloak class="d-wb wbo-v h100 w100" id="bVue">
+		  <!-- 弹出膜层 -->
+		  <div v-if="leftDis==0" class="p-f  b-0 h100 w100 bc-00000000075 zi-998 leftRightTransion">
+		  	
+		  </div>
+		  <!-- 左侧膜层切换 -->
+		  <div  v-bind:style="{'left':leftDis+'px','-webkit-opacity':(1+leftDis/document.documentElement.clientWidth),'opacity':(1+leftDis/document.documentElement.clientWidth)}" class="p-f  b-0 h100 w100 d-wb   zi-999 leftRightTransion">
+		  	 <div class="w-230 bc-000  d-wb wbo-v">
+		  	 	<div class="wbf-1 wos-n">
+		  	 		<div class="h-105 bs-c d-wb wba-e" style="background-image: url(images/main/img.png);">
+			  	 		<div v-if="isLogin==false" class="d-wb wba-c h-40 c-fff fs-15 w100 ">
+			  	 			<div @click="openWin('login')" class="wbf-1 wos-n bc-464059 d-wb wb-c h-40">
+			  	 				<img src="images/main/loginicon.png" class="h-15 mr-3"/>
+			  	 				登陆
+			  	 			</div>
+			  	 			<div @click="openWin('register')" class="wbf-1 wos-n bc-CCAC67 d-wb wb-c h-40">
+			  	 				<img src="images/main/icon-zhuce.png" class="h-15 mr-3"/>
+			  	 				注册
+			  	 			</div>
+			  	 		</div>
+						<div v-else class="h-38 d-wb wba-c mb-15 wbf-1 wos-n">
+			  	 			<div class="wbf-1 wos-n d-wb wbo-v h-38 pl-15">
+				  	 			 <div class="d-wb wba-c h-13 fs-13 d-wb wba-c mt-3">
+				  	 			 	<div class="c-fff w-75 d-wb wba-c">
+				  	 			 		用户账户
+				  	 			 	</div>
+				  	 			 	<div class="c-CCAC67 wlc-1">
+				  	 			 		{{retData3.name}}
+				  	 			 	</div>
+				  	 			 </div>
+				  	 			 <div class="wbf-1 wos-n">
+				  	 			 	
+				  	 			 </div>
+				  	 			 <div class="d-wb wba-c h-13 fs-13 d-wb wba-c mb-3">
+				  	 			 	<div class="c-fff w-75 d-wb wba-c">
+				  	 			 		平台金额
+				  	 			 	</div>
+				  	 			 	<div class="c-CCAC67">
+				  	 			 		{{retData3.money}}
+				  	 			 	</div>
+				  	 			 </div>
+				  	 		</div>
+				  	 		<div @click="ajaxDataFun4" class="h-38 w-68 bc-CCAC67 d-wb wb-c fs-10 c-fff br-05000005">
+				  	 			退出当前账户
+				  	 		</div>
+			  	 		</div>
+			  	 	</div>
+			  	 	<div @click="leftDis=-(document.documentElement.clientWidth);" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_home@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				首页
+		  	 			</div>
+		  	 		</div>
+		  	 		<div @click="openWin('zhenrenshixun')" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_zhenrnn@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				真人视讯
+		  	 			</div>
+		  	 		</div>
+		  	 		<div @click="openWin('dianziyouxi')" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_dianziyouxi@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				电子游戏
+		  	 			</div>
+		  	 		</div>
+		  	 		<div @click="openWin('youhuihuodong')" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_chouma@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				优惠活动
+		  	 			</div>
+		  	 		</div>
+		  	 		<!-- <div class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_lishiliulan@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				最近浏览
+		  	 			</div>
+		  	 		</div> -->
+		  	 		<div @click="showGongao=!showGongao" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_youxi(1)@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				游戏公告
+		  	 			</div>
+		  	 		</div>
+		  	 		<div @click="openWin('liuyanfankui')" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21">
+			  	 			<img src="images/main/icon_liuyan@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				留言反馈
+		  	 			</div>
+		  	 		</div>
+		  	 		<div @click="openWin('xiaoxizhongxin')" class="h-41 d-wb wba-c bc-000">
+			  	 		<div class="d-wb wb-c ml-27 mr-12 w-21  p-r">
+							<div v-if="retData5.length!=0" class="h-6 w-6 bc-f00 p-a r-0 t-0 br-3">
+								
+							</div>
+			  	 			<img src="images/main/icon_xiaoxi(1)@2x.png" class="h-16"/>
+			  	 		</div>
+		  	 			<div class="c-CCAC67 fs-15 h-41 bb-1-464059 d-wb wba-c bs-bb wbf-1 wos-n">
+		  	 				消息记录
+		  	 			</div>
+		  	 		</div>
+		  	 	</div>
+		  	 	<div class="ml-54 mb-42 h-10 fs-10 c-999">
+		  	 		@博亚娱乐
+		  	 	</div>
+		  	 </div>
+			 <div @click="leftDis=-(document.documentElement.clientWidth);" class="wbf-1 wos-n">
+			 	
+			 </div>
+		  </div>
+		  <!-- 主页面容器 -->
+		  <div class="d-wb wbo-v wbf-1 o-s">
+		    <div  class="d-wb wba-c h-44 bc-0B102A">
+		      <div @click="leftDis=0" class="h-44 w-44 d-wb wb-c ">
+		      	<img src="images/main/icon-menu.png" class="h-15 ml-5"/>
+		      </div>
+		      <div class="wbf-1 wos-n d-wb wb-c c-fff fs-18 lh-44 h-44 fw-800">博亚娱乐</div>
+		      <div class="h-44 w-44 d-wb wb-c ">
+		      	
+		      </div>
+		    </div>
+		    <div class="bc-0B102A wbf-1 wos-n d-wb wbo-v">
+		      <div class="w100 wbf-1 wos-n">
+		      	<div class="swiper-container">
+				    <div class="swiper-wrapper">
+				        <div class="swiper-slide">
+				        	<img src="images/main/banner/index_banner1.jpg" class="h-125"/>
+				        </div>
+				        <div @click="openWin('zhenrenshixun')" class="swiper-slide">
+				        	<img src="images/main/banner/index_banner2.jpg" class="h-125"/>
+				        </div>
+				        <div @click="openWin('dianziyouxi')" class="swiper-slide">
+				        	<img src="images/main/banner/index_banner3.jpg" class="h-125"/>
+				        </div>
+						 <div @click="openWin('youhuihuodong')" class="swiper-slide">
+							<img src="images/main/banner/index_banner4.jpg" class="h-125"/>
+						</div>
+						<div @click="openWin('youhuihuodong')" class="swiper-slide">
+							<img src="images/main/banner/index_banner5.jpg" class="h-125"/>
+						</div>
+				    </div>
+				    <div class="swiper-pagination"></div>
+				</div>
+				<div @click="showGongao=!showGongao" class="h-30 bc-0B102A d-wb wba-c bb-1-464059 m-0015">
+		      		<div  class="d-wb wba-c fs-10 c-CCAC67 w-70">
+		      			<img src="images/main/icon-laba.png" class="h-12 mr-7"/>
+		      			博亚公告
+		      		</div>
+		      		<div class="wbf-1 wos-n fs-11 c-e5e5e5 d-wb wba-c ">
+						<marquee direction="left" scrollamount="2"  class="wbf-1 d-wb wba-c">
+							<div v-for="ret in retData" class="h-16 lh-16 d-wb wba-c wb-ba d-i">{{ret.name}}</div>
+						</marquee>
+		      		</div>
+		        </div>
+		        <div class="m-0015 d-wb wb-c h-140">
+		        	<div @click="openWin('zhenrenshixun')" class="h-120 d-wb wb-c wbf-1 wos-n" >
+						<img src="images/main/img1@2x.png" class="h-120 wbf-1 wos-n"/>
+		        	</div>
+					<div class="w-5">
+						
+					</div>
+		        	<div @click="openWin('dianziyouxi')" class="h-120 d-wb wb-c wbf-1 wos-n">
+						<img src="images/main/img2@2x.png" class="h-120 wbf-1 wos-n"/>
+		        	</div>
+		        </div>
+		        <div class="br-5 m-0015 d-wb wbo-v mt-5 ">
+					<div class="h-143 w-345 bs-c p-r" style="background-image: url(images/main/laohuji@2x.png);">
+						<div class="h-27 d-wb wb-ac w-345 p-r mt-5 o-h">
+							<digit-vue :index.sync="retData2ToShow(0)" left="4"></digit-vue>
+							<digit-vue  left="5.8"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(1)" left="7.7"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(2)" left="10.2"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(3)" left="12.6"></digit-vue>
+							<digit-vue  left="14.3"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(4)" left="16.1"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(5)" left="18.5"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(6)" left="21"></digit-vue>
+							<digit-vue  left="22.7"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(7)" left="24.5"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(8)" left="27"></digit-vue>
+							<digit-vue :index.sync="retData2ToShow(9)" left="29.4"></digit-vue>
+						</div>
+						<marquee v-if="retData1.length!=0" direction="up" scrollamount="1" class="p-a b-33 h-70 l-0 w100 o-s">
+							<div v-for="ret in retData1" class="w100 d-wb wba-c c-fff fs-11 h-20 d-wb wb-c">
+								祝贺{{ret.username}}玩家在{{ret.name}}获得了<div class="m-0505 c-CCAC67">￥{{ret.money}}</div>元
+							</div>
+						</marquee>
+					</div>
+		        </div>
+		        <div class="m-1515 d-wb wb-c">
+		        	<div @click="openWin('cunkuan')" class="d-wb wbf-1 wos-n h-50 bs-c br-5 pl-5 pt-5 wbo-v" style="background-image: url(images/main/icon-cunkuan.png);">
+						<div class="fs-12 c-fff fw-600 h-12">
+							存款
+						</div>
+						<div class="fs-12 c-fff mt-3">
+							Deposit
+						</div>
+		        	</div>
+		        	<div class="w-7">
+		        		
+		        	</div>
+		        	<div @click="openWin('tikuan')" class="d-wb wbf-1 wos-n h-50 bs-c br-5 pl-5 pt-5 wbo-v" style="background-image: url(images/main/icon-qukuan.png);">
+						<div class="fs-12 c-fff fw-600 h-12">
+							取款
+						</div>
+						<div class="fs-12 c-fff mt-3">
+							Withdraw
+						</div>
+		        	</div>
+		        	<div class="w-7">
+		        		
+		        	</div>
+		        	<div @click="openWin('youhuihuodong')" class="d-wb wbf-1 wos-n h-50 bs-c br-5 pl-5 pt-5 wbo-v" style="background-image: url(images/main/icon-youhui.png);">
+						<div class="fs-12 c-fff fw-600 h-12">
+							优惠活动
+						</div>
+						<div class="fs-12 c-fff mt-3">
+							Discount
+						</div>
+		        	</div>
+		        	<div class="w-7">
+		        		
+		        	</div>
+		        	<div @click="v.$refs.footvue.callKefu = true" class="d-wb wbf-1 wos-n h-50 bs-c br-5 pl-5 pt-5 wbo-v"style="background-image: url(images/main/icon-kefu.png);">
+						<div class="fs-12 c-fff fw-600 h-12">
+							在线客服
+						</div>
+						<div class="fs-12 c-fff mt-3">
+							Customer
+						</div>
+		        	</div>
+		        </div>
+		      </div>
+		      <div  class="d-wb wba-c h-49 c-fff fs-17 w100 p-r">
+		      	<div class="p-a w100 h100 l-0 t-0 d-wb wba-c zi-100" v-if="isLogin==false">
+		      		<div @click="openWin('login')" class="wbf-1 wos-n bc-464059 d-wb wb-c h-49">
+		      			<img src="images/main/loginicon.png" class="h-17 mr-2"/>
+		      			会员登陆
+		      		</div>
+		      		<div @click="openWin('register')" class="wbf-1 wos-n bc-CCAC67 d-wb wb-c h-49">
+		      			<img src="images/main/icon-zhuce.png" class="h-17 mr-2"/>
+		      			免费注册
+		      		</div>
+		      	</div>
+				<div class="p-a w100 h100 l-0 t-0 zi-9" >
+					 <foot-vue ref="footvue" index="0" path="" >
+											
+					</foot-vue>
+				</div>
+		      </div>
+		    </div>  
+		  </div>
+		  <!-- 公告 -->
+		  <div v-show="showGongao" class="p-f l-0 t-0 w100 h100 d-wb wb-c zi-1000 bc-00000000075">
+		  	<div class="d-wb wbo-v wb-c w-291">
+		  		<img src="images/main/gonggaoimg.png" class="w-291 h-121"/>
+		  		<div class="w-291 br-5 bc-fff d-wb wbo-v o-h">
+		  			<div class="h-47 d-wb wb-c m-0020 bb-1-eee fs-18 fw-800">
+		  				游戏公告
+		  			</div>
+		  			<div class="wbf-1 wos-n o-a m-0020">
+		  				<div v-for="(ret,index) in retData" v-bind:class="{'bb-1-eee':ret==retData.length-1}" class="d-wb wbo-v pb-10">
+		  					<div class="h-37 d-wb wb-c">
+		  						<div class="h-18 w-18 br50 c-fff fs-15 fw-800 bc-CCAC67 ta-c lh-18">
+		  							{{index+1}}
+		  						</div>
+		  					</div>
+		  					<div v-html="ret.name" class="ta-c  fs-13 ">
+		                  		
+		  					</div>
+		  				</div>
+		  				<div class="h-30">
+		  					
+		  				</div>
+		  			</div>
+		  			<div @click="showGongao=!showGongao" class="h-40 d-wb wb-c bc-CCAC67 fs-15 fw-800">
+		  				关闭
+		  			</div>
+		  		</div>
+		  	</div>
+		  </div>
+		</div>
+		<script type="text/x-template" id="digitDom">
+			<div class="d-wb wbo-v wb-c p-a scroll" v-bind:style="{'left':left+'rem','bottom':-(27-index*2.7)+'rem'}">
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/0.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/1.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/2.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/3.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/4.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/5.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/6.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/7.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/8.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wb-c">
+					<img src="images/main/9.png" class="h-27">
+				</div>
+				<div class="w-10 h-27 d-wb wbp-c wba-e">
+					<img src="images/main/,.png" class="h-10">
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			Vue.component('digit-vue',{
+				data:function(){
+					return {}
+				},
+				template:"#digitDom",
+				props:{
+					index:{
+						type:Number,
+						default:10
+					},
+					left:{
+						type:Number,
+						default:0
+					}
+				}
+			})
+		</script>
+		<script>
+			var v=new Vue({
+				el:"#bVue",
+				data:{
+					leftDis:-document.documentElement.clientWidth,
+					isLogin:checkLoginStatus({onlyStatus:true}),
+					showGongao:false,//是否弹出公告
+					marqueeTop:-30,
+					retData:[],//公告
+					retData1:[],//中奖人
+					retData2:"1245678912",//奖池
+					retData3:{  //用户信息
+						"id": 0,
+						"name": "---",
+						"avatar": "---",
+						"phone": "-----",
+						"real_name": "---",
+						"money": "----",
+						is_bind_ali: 0,//是否绑定支付宝
+						is_bind_withdrawals:0,//是否绑定提款密码
+						"created_at": "2018-11-19 14:23:27",
+						"updated_at": "2019-01-23 12:28:51"
+					},
+					retData5:[], ///消息列表
+				},
+				mounted:function(){
+					var _this = this;
+					window.mySwiper = new Swiper ('.swiper-container', {
+					    loop: true, // 循环模式选项
+					    pagination: {
+					      el: '.swiper-pagination',
+					    },
+					    autoplay: {
+						    delay: 5000,
+						    stopOnLastSlide: false,
+						    disableOnInteraction: false,
+					    },
+					  });
+					  this.ajaxDataFun();
+					  this.ajaxDataFun1();
+					  this.ajaxDataFun2();
+					  setInterval(function(){
+					  	v.ajaxDataFun2()
+					  },5000)
+					  this.ajaxDataFun3();
+					  setTimeout(function(){
+					  	_this.ajaxDataFun3();
+					  },1000)
+				},
+				methods:{
+					retData2ToShow:function(index){
+						return this.retData2[index]
+					},
+					ajaxDataFun:function(){  //公告
+						apiajax({
+							url:"/api/notice",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret.data;
+							}
+						});
+					},
+					ajaxDataFun1:function(){  //中奖人列表
+						apiajax({
+							url:"/super",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								try{
+									v.retData1 = JSON.parse(ret);
+									for(var i=0;i<5;i++){
+										v.retData1 = v.retData1.concat(JSON.parse(ret))
+									}
+								}catch(e){
+									v.retData1 = [];
+									//TODO handle the exception
+								}
+								setTimeout(function(){
+									v.ajaxDataFun1();
+								},50*1000)
+							}
+						});
+					},
+					ajaxDataFun2:function(){  //超级奖池
+						apiajax({
+							url:"/bonus_pool",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData2 = ret;
+							}
+						});
+					},
+					ajaxDataFun3:function(){  //获取用户信息
+						apiajax({
+							url:"/api/user",
+							method:"get",
+							data:{
+								values:{}
+							},
+							async:false
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData3 = ret;
+							}
+						},2);
+					},
+					ajaxDataFun4:function(){  //退出登录
+						apiajax({
+							url:"/api/authorizations/current",
+							method:"del",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								$api.rmStorage("token");
+								v.isLogin = false;
+							}
+						},1);
+					},
+					ajaxDataFun5:function(){  //获取消息列表
+						apiajax({
+							url:"/api/user/list/message",
+							method:"get",
+							data:{
+								values:{
+									include:'withMessage',
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData5 = ret.data.filter(function(value,index){
+									return value.read == 0
+								})
+							}
+						},2);
+					},
+					openWin:function(winName){
+						if(winName == 'login'){
+							window.location.href = "./login.html"
+						}
+						if(winName == 'register'){
+							window.location.href = "./register.html"
+						}
+						if(winName == 'dianziyouxi'){
+							window.location.href = "./dianziyouxi.html"
+						}
+						if(winName == 'youhuihuodong'){
+							window.location.href = "./youhuihuodong.html"
+						}
+						if(winName == 'liuyanfankui'){
+							window.location.href = "./liuyanfankui.html"
+						}
+						if(winName == 'zhenrenshixun'){
+							window.location.href = "./zhenrenshixun.html"
+						}
+						if(winName == 'xiaoxizhongxin'){
+							window.location.href = "./user/xiaoxizhongxin.html"
+						}
+						if(winName == 'cunkuan'){
+							checkLoginStatus();
+							window.location.href = "./user/cunkuan.html"
+						}
+						if(winName == 'tikuan'){
+							checkLoginStatus();
+							if(!this.retData3.real_name){
+								window.location.href="./user/ziliaoChange.html?nowType=0&canNext=true"
+							}else if(this.retData3.is_bind_withdrawals == 0){
+								window.location.href="./user/ziliaoChange.html?nowType=1&canNext=true"
+							}else if(this.retData3.is_bind_ali == 0){
+								window.location.href="./user/ziliaoChange.html?nowType=2&canNext=true"
+							}else{
+								window.location.href = "./user/tikuan.html"
+							}
+						}
+					}
+				}
+			});
+		</script>
+	</body>
 </html>

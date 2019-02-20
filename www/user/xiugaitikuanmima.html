@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>填写资料</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<div class="d-wb wba-c h-44 fw-800 bc-0B102A">
+				<div @click="back" class="h-44 w-44 d-wb wb-c">
+					<img src="../images/main/icon_arrow_white.png" class="h-18">
+				</div> 
+				<div class="wbf-1 d-wb wb-c fs-18 c-fff"> 
+					修改提款密码			
+				</div> 
+				<div class="h-44 w-44 d-wb wb-c"></div>
+			</div>
+			<div class="wbf-1 bc-F5F5F5">
+				<div class="d-wb wba-c h-30 p-0044 fs-10 c-666">
+					请在输入框内输入真实有效的信息！
+				</div>
+				<div key="1" class="d-wb wbo-v">
+					<input-vue 
+						:input_value.sync="tk.password_old.value" 
+						:placeholder="tk.password_old.placeholder" 
+						:label="tk.password_old.label"
+						type="password"
+					></input-vue>
+					<input-vue 
+						:input_value.sync="tk.password.value" 
+						:placeholder="tk.password.placeholder" 
+						:label="tk.password.label"
+						type="password"
+					></input-vue>
+					<input-vue 
+						:input_value.sync="tk.password_confirmation.value" 
+						:placeholder="tk.password_confirmation.placeholder" 
+						:label="tk.password_confirmation.label"
+						type="password"
+					></input-vue>
+				</div>
+				<div @click="ajaxDataFun1" class="m-0044 mt-50  h-40 d-wb wb-c b-top-CCAC67-EECE8A fs-18 fw-800">
+					完成
+				</div>
+			</div>
+		</div>
+		<script type="text/x-template" id="inputDom">
+			<div class="fs-15 p-0044 bc-fff">
+				<div class="h-40 d-wb wba-c bb-1-f5f5f5 ">
+					<div class="d-wb wba-c fw-800">
+						{{label}}
+					</div>
+					<div class="wbf-1 d-wb wba-c h-40 pl-11">
+						<input v-bind:type="type" v-model="input_temp" class="d-b h-20 wbf-1 o-n lh-20" :placeholder="placeholder" />
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			Vue.component("input-vue",{
+				data:function(){
+					return {
+						input_temp:""
+					}
+				},
+				props:["label","placeholder","input_value","type"],
+				template:"#inputDom",
+				methods:{
+					
+				},
+				watch: {
+					input_temp:function(nl, ol) {
+						this.$emit("update:input_value",nl)
+					}
+				},
+			})
+		</script>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowType: 0,
+					tk:{
+						password:{
+							value:"",
+							label:"提款密码:",
+							placeholder:"请输入6-12位字母或数字"
+						},
+						password_confirmation:{
+							value:"",
+							label:"再次输入:",
+							placeholder:"请输入6-12位字母或数字"
+						},
+						password_old:{
+							value:"",
+							label:"原密码",
+							placeholder:"请输入6-12位字母或数字"
+						}
+					},
+				},
+				mounted: function() {
+					
+				},
+				computed:{
+					
+				},
+				methods: {
+					ajaxDataFun1:function(){  //修改提款密码
+						if(v.tk.password.value!=v.tk.password_confirmation.value||v.tk.password.value.length<6||v.tk.password.value.length>12){
+							alert("请输入正确的提款密码");
+							return
+						}
+						apiajax({
+							url:"/api/user/update_withdrawals",
+							method:"PUT",
+							data:{
+								values:{
+									password:v.tk.password.value,
+									password_confirmation:v.tk.password_confirmation.value,
+									password_old:v.tk.password_old.value,
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								alert("修改成功!");
+								apicloseWin();
+							}
+						},1);
+					},
+					back:function(){
+						apicloseWin();
+					},
+				}
+			});
+		</script>
+	</body>
+
+</html>

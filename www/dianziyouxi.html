@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>电子游戏</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			.moveTop{
+				-webkit-animation: moveTopAnimation linear 25s infinite;
+				animation: moveTopAnimation linear 25s infinite;
+			}
+			@-webkit-keyframes moveTopAnimation{
+				from{
+					margin-top:0px;
+				}
+				to{
+					margin-top:-600px;
+				}
+			}
+			/*向下*/
+			.triangle_border_down{
+			    width:0;
+			    height:0;
+			    border-width:1.2rem 0.6rem 0 0.6rem ;
+			    border-style:solid;
+			    border-color:#CCAC67 transparent transparent transparent;/*灰 透明 透明 */
+			}
+			
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div v-cloak class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="电子游戏" theme="light"></header-vue>
+			<div class="h-60 d-wbox w100 o-a bc-2a3577">
+				<div v-for="(ret,index) in retData2" @click="nowName=ret.api_title;nowIndex = index;" v-bind:style="{'backgroundColor':nowName == ret.api_title?'#CCAC67':'','color':nowName == ret.api_title?'#0B102A':'#fff'}" class="w-80 h-40 d-wb wb-c wbo-v p-r bc-0B102A">
+					<img v-if="nowName != ret.api_title&&defaultImg.indexOf(ret.api_title)!=-1" v-bind:src="'images/dianziyouxi/'+ret.api_title+'0.png'"  class="h-17">
+					<img v-else-if="nowName == ret.api_title&&defaultImg.indexOf(ret.api_title)!=-1" v-bind:src="'images/dianziyouxi/'+ret.api_title+'1.png'"  class="h-17">
+					<img v-else-if="nowName != ret.api_title" src="images/dianziyouxi/iocn_game_u.png"  class="h-17">
+					<img v-else src="images/dianziyouxi/iocn_game.png"  class="h-17">
+					<div class="fs-10 fw-800 mt-2 d-wb wb-c">
+						{{ret.api_title}}
+					</div>
+					<div v-if="nowName == ret.api_title" class="p-a triangle_border_down b--10 l-34">
+						
+					</div>
+				</div>
+			</div>
+			<div class="wbf-1 bc-2a3577 p-0007" id="bodyContent">
+				<div class="m-0006 h-30 br-5 o-h bc-eee  bs-bb d-wb wba-c">
+					<div class="h-30 pl-7 pr-5 d-wb wb-c">
+						<img src="images/dianziyouxi/icon_search@2x.png"  class="h-15 mr-5">
+					</div>
+					<input type="text" v-model="serchName" class="d-b wbf-1 h-14 lh-14 c-999 o-n" placeholder="请输入关键字"/>
+					<div @click="ajaxDataFun1" class="w-50 h-30 bc-CCAC67 d-wb wb-c c-fff fs-11">
+						搜索
+					</div>
+				</div>
+				<div id="contentBody">
+					<div v-if="!!retData1[nowName]&&retData1[nowName].length!=0" class="d-wb wfw-w mt-3">
+						<div @click="openWin(ret)" v-for="ret in retData1[nowName]" class="m-0606 w-107 br-5 h-150 bc-fff d-wb wbo-v o-h">
+							<div class="h-110 w-107 bc-0B102A d-wb wb-c">
+								<img v-bind:src="AJAXURL+ret.img" class="w100" >
+							</div>
+							<div class="h-40 d-wb wba-e wbp-c p-r c-212121 fs-14 fw-800">
+								<img src="images/dianziyouxi/play.png" class="p-a t--9 zi-100 l-23 h-18 w-60" >
+								<div class="d-wb wb-c mb-7 wlc-1">
+									{{ret.name}}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div v-else class="h-400 d-wb wb-c c-fff fs-14">
+						暂无游戏
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index="0"
+				path=""
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					serchName:"",//搜索的关键字
+					nowName:"",
+					nowIndex: 0,
+					retData1:{},//游戏列表,有数据就缓存
+					retData1_page:{},//游戏列表page
+					retData1_maxPage:{},//游戏列表最大的page
+					retData2:[],//平台列表
+					retData3:[],//中奖人列表
+					defaultImg:['CQ9','EVO','MG','PG','PT','SWP','RTG'],
+				},
+				mounted: function() {
+					var _this = this;
+					this.ajaxDataFun2();
+					$("#bodyContent").scroll(function(){
+						if($("#contentBody").height()-$(this).scrollTop()>400){
+							_this.ajaxDataFun1();
+						}
+					});
+				},
+				methods: {
+					ajaxDataFun1:function(){  //游戏列表
+						var _this = this;
+						if(!_this.retData1_page[_this.nowName]){
+							//有数据就缓存
+							_this.$set(_this.retData1_page,_this.nowName,1);
+							_this.$set(_this.retData1_maxPage,_this.nowName,10);
+							_this.$set(_this.retData1,_this.nowName,[]);
+						}else{
+							_this.retData1_page[_this.nowName]++;
+						}
+						//超出了最大的页数限制
+						if(_this.retData1_page[_this.nowName]>_this.retData1_maxPage[_this.nowName]){
+							return
+						}
+						var value = {
+							api_name:this.nowName,
+							page:_this.retData1_page[_this.nowName]
+						}
+						if(this.serchName!=""){  //添加搜索字段
+							value.name = this.serchName;
+						}
+						apiajax({
+							url:"/api/third_party_platform/game",
+							method:"get",
+							data:{
+								values:value
+							},
+							async:false,
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								if(_this.retData1_page[_this.nowName]==1){
+									_this.retData1[_this.nowName]=[];
+								}
+								_this.retData1_maxPage[_this.nowName] = ret.meta.pagination.total_pages;
+								_this.retData1[_this.nowName] = _this.retData1[_this.nowName].concat(ret.data);
+							}
+						});
+					},
+					ajaxDataFun2:function(){  //平台列表
+						apiajax({
+							url:"/api/third_party_platform",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData2 = ret.data.filter(function(value,index){
+									return value.api_type==0||value.api_type==2
+								});
+								if(v.retData2.length!=0){
+									v.nowName = v.retData2[0].api_title;
+								}
+							}
+						});
+					},
+					openWin:function(ret){
+						checkLoginStatus();
+						window.location.href = "./playgame.html?data="+encodeURIComponent(JSON.stringify(ret))+"&pingtai=" +encodeURIComponent(JSON.stringify(v.retData2[v.nowIndex]))
+					}
+				},
+				watch: {
+					nowName:function(nl, ol) {
+						if(nl!=''){
+							this.serchName = "";
+							if(ol!=''){
+								this.retData1_page[ol] = 0;
+							}
+							this.ajaxDataFun1();
+						}
+					},
+					serchName:function(nl,ol){
+						this.retData1_page[this.nowName] = 0;
+					}
+				},
+			});
+		</script>
+	</body>
+
+</html>

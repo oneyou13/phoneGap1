@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="0">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>个人中心</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="个人中心"></header-vue>
+			<div class="wbf-1 bc-eee" >
+				<div class="h-76 bs-c d-wb wba-c bc-0B102A" style="background-image: url(../images/bg.png);">
+					<div class="ml-15 d-wb wba-c wbf-1 bs-bb">
+						<img src="../images/user/default_person.png" class="h-44 w-44" >
+						<div class="d-wb wbo-v wbf-1 ml-6">
+							<div class="fs-10 c-fff">
+								{{retData.name}}
+							</div>
+							<img src="../images/user/vip.png" class="h-11 mt-11 w-30">
+						</div>
+						<div class="d-wb wbo-v wbf-1">
+							<div class="fs-15 c-fff">
+								总资产(元)
+							</div>
+							<div class="c-CCAC67 fs-18">
+								{{retData.money}}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="h-90 d-wb wba-c bc-fff">
+					<div @click="openWin('cunkuan')" class="wbf-1 d-wb wb-c wbo-v">
+						<img src="../images/user/icon_cunkuan@2x.png" class="h-45 w-45" >
+						<div class="c-212121 fw-8000 fs-14 mt-9">
+							存款
+						</div>
+					</div>
+					<div @click="openWin('tikuan')" class="wbf-1 d-wb wb-c wbo-v">
+						<img src="../images/user/icon_tikuan@2x.png" class="h-45 w-45" >
+						<div class="c-212121 fw-8000 fs-14 mt-9">
+							提款
+						</div>
+					</div>
+					<div @click="openWin('zhuanzhang')" class="wbf-1 d-wb wb-c wbo-v">
+						<img src="../images/user/icon_zhuanzhagn@2x.png" class="h-45 w-45" >
+						<div class="c-212121 fw-8000 fs-14 mt-9">
+							转账
+						</div>
+					</div>
+				</div>
+				<div class="mt-10 bc-fff c-666 fs-14">
+					<div @click="openWin('jiaoyijilu')" class="h-40 d-wb wba-c p-0015 bb-1-eee">
+						<img src="../images/user/icon_jiaoyi.png" class="w-17" >
+						<div class="wbf-1 d-wb wba-c pl-8">
+							交易记录
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-15" >
+					</div>
+					<div @click="openWin('caifuzhongxin')" class="h-40 d-wb wba-c p-0015 bb-1-eee">
+						<img src="../images/user/icon_qiandai.png" class="w-17" >
+						<div class="wbf-1 d-wb wba-c pl-8">
+							财富中心
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-15" >
+					</div>
+					<div @click="openWin('ziliao')" class="h-40 d-wb wba-c p-0015 bb-1-eee">
+						<img src="../images/user/icon_huiyuan.png" class="w-17" >
+						<div class="wbf-1 d-wb wba-c pl-8">
+							会员资料
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-15" >
+					</div>
+					<div @click="openWin('xiaoxizhongxin')" class="h-40 d-wb wba-c p-0015 bb-1-eee">
+						<img src="../images/user/xiaoxi(1).png" class="w-17" >
+						<div class="wbf-1 d-wb wba-c pl-8">
+							消息中心
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-15" >
+					</div>
+					<div @click="v.$refs.footvue.callKefu = true" class="h-40 d-wb wba-c p-0015 bb-1-eee">
+						<img src="../images/user/kefu.png" class="w-17" >
+						<div class="wbf-1 d-wb wba-c pl-8">
+							客服中心
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-15" >
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				v-once
+				:index="3"
+				path="../"
+				ref="footvue"
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					retData:{
+						"id": 0,
+						"name": "---",
+						"avatar": "---",
+						"phone": "-----",
+						"real_name": "---",
+						"money": "----",
+						is_bind_ali: 0,//是否绑定支付宝
+						ali_user:"",//支付宝账号
+						is_bind_withdrawals:0,//是否绑定提款密码
+						"created_at": "2018-11-19 14:23:27",
+						"updated_at": "2019-01-23 12:28:51"
+					}
+				},
+				mounted: function() {
+					var _this = this;
+					this.ajaxDataFun();
+					 setTimeout(function(){
+						_this.ajaxDataFun();
+					},1000)
+				},
+				methods: {
+					back:function(){
+						window.location.href.back()
+					},
+					ajaxDataFun:function(){  //获取个人信息
+						apiajax({
+							url:"/api/user",
+							method:"get",
+							data:{
+								values:{}
+							},
+							async:false
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret;
+							}
+						},1);
+					},
+					openWin:function(winName){
+						if(winName=="ziliao"){
+							window.location.href="./ziliao.html"
+						}
+						if(winName=="caifuzhongxin"){
+							window.location.href="./caifuzhongxin.html"
+						}
+						if(winName=="jiaoyijilu"){
+							window.location.href="./jiaoyijilu.html"
+						}
+						if(winName=="xiaoxizhongxin"){
+							window.location.href="./xiaoxizhongxin.html"
+						}
+						if(winName == 'cunkuan'){
+							window.location.href = "./cunkuan.html"
+						}
+						if(winName == 'tikuan'){
+							if(!this.retData.real_name){
+								window.location.href="./ziliaoChange.html?nowType=0&canNext=true"
+							}else if(this.retData.is_bind_withdrawals == 0){
+								window.location.href="./ziliaoChange.html?nowType=1&canNext=true"
+							}else if(this.retData.is_bind_ali == 0){
+								window.location.href="./ziliaoChange.html?nowType=2&canNext=true"
+							}else{
+								window.location.href = "./tikuan.html"
+							}
+						}
+						if(winName == 'zhuanzhang'){
+							window.location.href = "./zhuanzhang.html"
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

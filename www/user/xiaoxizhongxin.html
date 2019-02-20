@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>消息中心</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			.tran{
+				-webkit-transition:left 0.2s linear;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="消息中心">
+				
+			</header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+					<div class="mt-15">
+					<!-- 	<div v-for="ret in retData" @touchstart="touchStart(ret,event)"  @touchmove="touchMove(ret,event)" @touchend="touchEnd(ret,event)" class="w-100-v p-r h-60 bb-1-F5F5F5 o-h">
+							<div :style="{'left':ret.left+'px'}" class="h-60 w-123-v d-wb wba-c p-a t-0 tran">
+								<div class="wbf-1 bc-fff pl-15 d-wb wbo-v wbp-c h-60 pl-24 ">
+									<div class="wlc-1">
+										<span class="fs-15 c-212121 fw-800">
+											【系统消息】
+										</span>
+										<span class="fs-15 c-212121">
+											{{ret.withMessage.title}}				
+										</span>
+									</div>
+									<div class="wlc-1 fs-10 c-666 mt-5">
+										{{ret.withMessage.content}}
+									</div>
+								</div>
+								<div @click="ajaxDataFun1(ret)" class="bc-E1255B h-60 w-80 d-wb wb-c c-fff fw-800 fs-15">
+									<img src="../images/user/icon_dele.png" class="h-15 mr-5">
+									删除
+								</div>
+							</div>
+						</div> -->
+						<div v-for="ret in retData" class="w-100-v p-r h-60 bb-1-F5F5F5 o-h">
+							<div  class="h-60 w-100-v d-wb wba-c p-a t-0 tran l-0">
+								<div class="wbf-1 bc-fff pl-15 d-wb wbo-v wbp-c h-60 pl-24 ">
+									<div class="wlc-1">
+										<span class="fs-15 c-212121 fw-800">
+											【系统消息】
+										</span>
+										<span class="fs-15 c-212121">
+											{{ret.withMessage.title}}				
+										</span>
+									</div>
+									<div class="wlc-1 fs-10 c-666 mt-5">
+										{{ret.withMessage.content}}
+									</div>
+								</div>
+							</div>
+						</div>
+						<div v-if="retData.length==0" class="h-200 d-wb wb-c fs-14 c-666">
+							暂无消息~
+						</div>
+					</div>
+				</div>
+				<foot-vue
+					:index="3"
+					path="../"
+				></foot-vue>
+			</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					retData:[],
+					leftMax:0
+				},
+				mounted: function() {
+					this.leftMax = -document.documentElement.clientWidth / 37.5 *8;
+					this.ajaxDataFun();
+				},
+				methods: {
+					touchStart:function(ret,ev){
+						ret.start=ev.targetTouches[0].clientX;
+						ret.initLeft=ret.left;
+						ev.target.parentNode.style.webkitTransitionDuration = "0s"
+					},
+					touchMove:function(ret,ev){
+						ret.left += (ev.targetTouches[0].clientX-ret.start);
+						if(ret.left<=this.leftMax){
+							ret.left = this.leftMax;
+						}
+						if(ret.left>0){
+							ret.left  = 0
+						}
+						ret.start=ev.targetTouches[0].clientX;
+					},
+					touchEnd:function(ret,ev){
+						ev.target.parentNode.style.webkitTransitionDuration = "0.2s";
+						if(ret.left <= ret.initLeft && ret.left!=0){
+							ret.left = this.leftMax;
+						}else{
+							ret.left = 0 ;
+						}
+					},
+					ajaxDataFun:function(){  //获取消息列表
+						apiajax({
+							url:"/api/user/list/message",
+							method:"get",
+							data:{
+								values:{
+									include:'withMessage',
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret.data.map(function(value,index){
+									value.left=0;
+									value.start=0;
+									value.initLeft=0;
+									return value
+								})
+							}
+						},1);
+					},
+					ajaxDataFun1:function(ret){ //删除消息
+						apiajax({
+							url:"/api/user/"+id+"/message",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.ajaxDataFun();
+							}
+						},1);
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

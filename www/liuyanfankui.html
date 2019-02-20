@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>留言反馈</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			::-webkit-input-placeholder{
+
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v w100" id="bVue">
+			<header-vue title="留言反馈" theme="light"></header-vue>
+			<div class="wbf-1 d-wb wbo-v bc-EEEEEE">
+				<div class="m-35152615 br-5 wbs-00101002-00000000005  bc-fff d-wb wbo-v o-h">
+					<!-- <div class="h-40 d-wb wba-c fs-15 m-0011 bb-1-eee">
+						<div class="w-36 d-wb wb-c">
+							姓名:
+						</div>
+						<div class="wbf-1 h-40 d-wb wba-c">
+							<input type="text" class="o-n d-b wbf-1 h-14 lh-21 fs-14" />
+						</div>
+					</div> -->
+					<div class="h-40 d-wb wba-c fs-15 m-0011 bb-1-eee">
+						<div class="w-36 d-wb wb-c">
+							QQ:
+						</div>
+						<div class="wbf-1 h-40 d-wb wba-c">
+							<input v-model="ajaxData.qq" type="text" class="o-n d-b wbf-1 h-14 lh-21 fs-14" />
+						</div>
+					</div>
+					<div class="h-40 d-wb wba-c fs-15 m-0011 bb-1-eee">
+						<div class="w-36 d-wb wb-c">
+							手机:
+						</div>
+						<div class="wbf-1 h-40 d-wb wba-c">
+							<input v-model="ajaxData.phone" type="text" class="o-n d-b wbf-1 h-14 lh-21 fs-14" />
+						</div>
+					</div>
+					<div class="fs-15 fw-800 m-0a mt-21 mb-15">
+						请描述你的问题:
+					</div>
+					<div class="h-180 d-wb wb-c bc-eee">
+						<textarea  v-model="ajaxData.content" class="h-180 wbf-1 o-n p-0505 wb-ba bs-bb fs-10" placeholder="问题描述内容最大200字"></textarea>
+					</div>
+					<div class="m-0a mt-15 mb-21 d-wb wb-c ">
+						<div class="fs-15 fw-800 d-wb wb-c">
+							验证码：
+						</div>
+						<div class="b-1-000 br-5 d-wb wb-c h-30  w-130">
+							<input v-model="ajaxData.captcha_code"  type="text" class="h-15 fs-15 lh-21 d-b wbf-1 o-n" />
+							<div v-if="codeStr==''" @click="ajaxDataFun1"  class="h-30 wbf-1 br-5 bc-000 c-fff d-wb wb-c fs-10">
+								获取验证码
+							</div>
+							<div v-else @click="ajaxDataFun1" class="h-30 wbf-1 br-5 bc-000 c-fff d-wb wb-c fs-18">
+								<img v-bind:src="codeStr" class="w-70 h-30" >
+							</div>
+						</div>
+					</div>
+					<div @click="ajaxDataFun" class="h-40 d-wb wb-c fw-800 fs-15 bc-CCAC67">
+						提交问题
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index.sync="footer.index"
+				path=""
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					footer:{
+						index:0
+					},
+					nowIndex: 0,
+					ajaxData:{
+						qq:"",
+						phone:"",
+						content:"",
+						captcha_key:"",
+						captcha_code:""
+					},
+					codeStr:"",
+					expired_at:"",//图片过期时间
+					passwordType:"password",
+					captcha_key:"",
+				},
+				mounted: function() {
+					$("#bVue").height(document.documentElement.clientHeight)
+				},
+				methods: {
+					ajaxDataFun:function(){  //提交反馈
+						if(v.codeStr==""){
+							v.ajaxDataFun1(0)
+							return
+						}
+						if(v.content==""){
+							alert("请输入内容!")
+							return
+						}
+						if(v.ajaxData.captcha_code==""){
+							alert("请输入验证码!")
+							return
+						}
+						if(v.ajaxData.phone!=""&&v.ajaxData.phone.match(/1\d{10,10}/g)==null){
+							alert("请输入正确的手机号码!")
+							return
+						}
+						if(Date.parse(v.expired_at.replace(/-/g,"/")) < (new Date()).getTime()){
+							alert("图片已过期")
+							return
+						}
+						apiajax({
+							url:"/api/feedback",
+							method:"post",
+							data:{
+								values:v.ajaxData
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								alert("提交成功!")
+							}
+						},1);
+					},
+					ajaxDataFun1:function(){ //获取验证码
+						var _this = this;
+						apiajax({
+							url:"/api/captchas/feedback",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								_this.codeStr = ret.captcha_image_content;
+								_this.ajaxData.captcha_key = ret.captcha_key;
+								_this.expired_at = ret.expired_at;
+							}
+						},1);
+					},
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="提款"></header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+				<div class="fs-15">
+					<div class="h-80 d-wb wba-c bc-fff  bt-15-F5F5F5 w100">
+						<div class="wbf-1 b-top-CCAC67-EECE8A h-80 pl-34 d-wb wbo-v wbp-c">
+							<div class="fs-14 fw-800">
+								总资产
+							</div>
+							<div class="fs-10 c-666">
+								所有平台账户总额
+							</div>
+							<div class="fs-18 fw-800 d-wb wba-c c-fff">
+								<div class="d-wb wba-c fs-10 fw-800">
+									￥:
+								</div>
+								{{retData2.count_money}}
+							</div>
+						</div>
+						<div class="w-1 h-80 bc-F5F5F5">
+							
+						</div>
+						<div class="wbf-1 b-top-34AAE1-4BBCF1 h-80 pl-34 d-wb wbo-v wbp-c">
+							<div class="fs-14 fw-800">
+								可提资金
+							</div>
+							<div class="fs-10 c-666">
+								所有平台账户总额
+							</div>
+							<div class="fs-18 fw-800 d-wb wba-c c-fff">
+								<div class="d-wb wba-c fs-10 fw-800">
+									￥:
+								</div>
+								{{dataAddDoit(retData2.withdrawal_money)}}
+							</div>
+						</div>
+					</div>
+					<div class="d-wb wba-c p-0016 bb-1-eee h-40 bc-f5f5f5">
+						<img src="../images/user/chongzhi/zhifubao@2x.png" class="h-20 w-20"/>
+						<div class="c-00A0E9 fs-15 d-wb wba-c ml-3">
+							支付宝
+						</div>
+					</div>
+					<div class="h-40 d-wb wba-c p-0016 bc-fff bb-1-F5F5F5">
+						<div class="fs-15 fw-800 mr-15">
+							支付宝账号:
+						</div>
+						<input v-model="retData.ali_user" readonly="readonly" type="text" placeholder="支付宝账号" class="fs-10 h-20 lh-20 wbf-1 o-n" />
+					</div>
+					<div class="h-40 d-wb wba-c p-0016 bc-fff bb-1-F5F5F5">
+						<div class="fs-15 fw-800 mr-15">
+							提款金额:
+						</div>
+						<input v-model="ajaxData1.money" type="text" placeholder="请输入具体提款金额" class="fs-10 h-20 lh-20 wbf-1 o-n" />
+					</div>
+					<div class="h-40 d-wb wba-c p-0016 bc-fff bb-1-F5F5F5">
+						<div class="fs-15 fw-800 mr-15">
+							提款密码:
+						</div>
+						<input v-model="ajaxData1.password" type="password" placeholder="请输入提款密码" class="fs-10 h-20 lh-20 wbf-1 o-n" />
+					</div>
+				</div>
+				<div @click="ajaxDataFun1" v-if="retData2.withdrawal_money>=ajaxData1.money"  class="m-0044 b-top-CCAC67-EECE8A mt-50  h-40 d-wb wb-c  fs-18 fw-800">
+					提款
+				</div>
+				<div v-else class="m-0044 bc-eee mt-50  h-40 d-wb wb-c c-ddd fs-18 fw-800">
+					超出可提现
+				</div>
+				<div class="mt-50 p-0044">
+					<div class="fs-12 fw-800">
+						重要提示:
+					</div>
+					<div class="mt-10 fs-10">
+				        因为支付宝转银行卡非及时到账，上分将受到到账时间影响，具体请您查看支付宝“到账时间”描述。
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index="3"
+				path="../"
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					cunkuan:"",
+					showSelect:false,
+					retData:{
+						"id": 0,
+						"name": "---",
+						"avatar": "---",
+						"phone": "-----",
+						"real_name": "---",
+						"money": "----",
+						is_bind_ali: 0,//是否绑定支付宝
+						ali_user:"",//支付宝账号
+						is_bind_withdrawals:0,//是否绑定提款密码
+						"created_at": "2018-11-19 14:23:27",
+						"updated_at": "2019-01-23 12:28:51"
+					},
+					ajaxData1:{
+						money:'',     //取款金额
+						password:""   //取款密码
+					},
+					retData2:{
+						"withdrawal_money":"0.00",
+						"frozen_money":0,
+						"count_money":0
+					},
+				},
+				mounted: function() {
+					this.ajaxDataFun2(); //请求资产
+					this.ajaxDataFun();//获取个人信息
+				},
+				methods: {
+					ajaxDataFun:function(){  //获取个人信息
+						apiajax({
+							url:"/api/user",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								if(!ret.ali_user){
+									ret.ali_user = ""
+								}
+								v.retData = ret;
+							}
+						},1);
+					},
+					ajaxDataFun1:function(){  //提交信息
+						if(parseInt(this.ajaxData1.money)==0){
+							alert("请输入有效的提款金额!");
+							return
+						}
+						if(this.ajaxData1.password==''||this.ajaxData1.password.lenggth<6||this.ajaxData1.password.lenggth>12){
+							alert("请输入正确的取款密码!");
+							return
+						}
+						apiajax({
+							url:"/api/withdraw",
+							method:"post",
+							data:{
+								values:v.ajaxData1
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								alert(err.message);
+							}else{
+								alert("提款成功");
+								window.location.href = "/user/index.html"
+							}
+						},1);
+					},
+					ajaxDataFun2:function(ret){  //请求资产
+						var _this = this;
+						apiajax({
+							url:"/api/member_assets",
+							method:"get",
+							data:{
+								values:{
+									
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData2 = ret;
+							}
+						},1);
+					},
+				},
+				watch:{
+					"ajaxData1.money":function(nl,ol){
+						this.ajaxData1.money = parseInt(((nl+'').match(/\d/g)||[0]).join(""))
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

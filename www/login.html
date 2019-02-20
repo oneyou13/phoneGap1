@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>登录</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			.error::-webkit-input-placeholder{
+				color:#f00;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body class="h100 w100 bs-c" style="background-image: url(images/user/login/bg.png);">
+		<div class="d-wb wbo-v  h100 w100 bc-00000000050"  id="bVue">
+			<header-vue title="登录" path=""></header-vue>
+			<div class="wbf-1 d-wb wb-c">
+				<div class=" bc-20417210390 h-350 w-345 br-5 p-15270027 bs-bb d-wb wbo-v">
+					<div class="d-wb wba-c fs-14 c-fff h-47">
+						<div class="w-80">
+							老用户登陆
+						</div>
+						<div @click="openWin('register')" class="wbf-1 d-wb wb-c fs-17 fw-800 c-000">
+							<img src="images/user/login/+.png" class="h-18 w-18 mr-3"/>
+							注册新用户
+						</div>
+						<div class="w-80">
+							
+						</div>
+					</div>
+					<div class="h-40 d-wb wba-c bc-fff p-0005">
+						<img src="images/user/login/icon_user.png" class="w-16"/>
+						<div class="h-20 wbf-1 d-wb wba-c">
+							<input onblur="checkErr('username')" v-model="ajaxData.username" type="text" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.username" />
+						</div>
+						<img v-if="ajaxData.username!=''" @click="ajaxData.username=''" src="images/user/login/icon_dele.png" class="h-12"/>
+					</div>
+					<div class="h-25 d-wb wba-c c-f00 fs-11 ">
+						{{err.username}}
+					</div>
+					<div class="h-40 d-wb wba-c bc-fff p-0005">
+						<img src="images/user/login/icon_password.png" class="w-16"/>
+						<div class="h-20 wbf-1 d-wb wba-c">
+							<input onblur="checkErr('password')" v-model="ajaxData.password" v-bind:type="passwordType" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.password"  />
+						</div>
+						<img v-if="passwordType=='password'" @click="passwordType='text'" src="images/user/login/icon_eye_dafa.png" class="h-12"/>
+						<img v-else @click="passwordType='password'" src="images/user/login/icon_eye_sele.png" class="h-12"/>
+					</div>
+					<div class="h-25 d-wb wba-c c-f00 fs-11 ">
+						{{err.password}}
+					</div>
+					<div class="h-40 d-wb wba-c  mb-15">
+						<div class="h-40 wbf-1 d-wb wba-c bc-fff">
+							<input  v-model="ajaxData.code" type="text" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.code" />
+						</div>
+						<div @click="ajaxDataFun1" v-if="codeStr==''" class="w-80 h-40 ml-15 d-wb wb-c bc-464059 c-D9D6D6 fs-12">
+							获取验证码
+						</div>
+						<div @click="ajaxDataFun1" v-else class="w-80 h-40 ml-15 d-wb wb-c bc-464059 c-D9D6D6 fs-12">
+							<img v-bind:src="codeStr" class="w-80 h-40">
+						</div>
+					</div>
+					<div class="h-15">
+						
+					</div>
+					<div @click="ajaxDataFun"  class="h-44 d-wb wb-c bc-0B102A  fs-18 c-fff">
+						立即登录
+					</div>
+					<div @click="isShowFindPassword = !isShowFindPassword" class="wbf-1 d-wb wba-c fs-10 c-fff">
+						<img src="images/user/login/find.png" class="h-10 mr-5"/>忘记密码
+					</div>
+				</div>
+			</div>
+			<div v-if="isShowFindPassword" class="p-f w100 h100 d-wb wbo-v wb-c l-0 t-0 bc-00000000075 ">
+				<div class="w-300 h-360 bs-c d-wb wbo-v bc-fff br-5 o-h">
+					<div class="h-320 d-wb  wbp-c">
+						<div class="w-123">
+							<img src="images/user/img_kef@2x.png" class="w-123 h-320">
+						</div>
+						<div class="wbf-1">
+							<div class="h-50">
+								
+							</div>
+							<div class="fs-10 c-212121">
+								请联系客服
+							</div>
+							<div class="fs-14 c-212121 mt-5">
+								重置你的密码：
+							</div>
+							<div class="d-wb wba-c bc-464059 br-5 h-40 w-155 mt-24">
+								<div class="ml-3 mr-3">
+									<img src="images/user/xiugaimima/icon_QQ.png" class="h-28 w-28"/>	
+								</div>
+								<div class="wbf-1 d-wb wbo-v wbp-c fs-14 c-fff pl-1">
+									<div class="d-wb wba-c">
+										客服QQ:
+									</div>
+									<div class="d-wb wba-c">
+										152323323
+									</div>
+								</div>
+							</div>
+							<div class="d-wb wba-c bc-464059 br-5 h-40 w-155 mt-10">
+								<div class="ml-3 mr-3">
+									<img src="images/user/xiugaimima/dianhua.png" class="h-28 w-28"/>	
+								</div>
+								<div class="wbf-1 d-wb wbo-v wbp-c fs-14 c-fff pl-1">
+									<div class="d-wb wba-c">
+										客服电话:
+									</div>
+									<div class="d-wb wba-c">
+										158 8688 9688
+									</div>
+								</div>
+							</div>
+							<div class="d-wb wba-c mt-31 ml-7">
+								<img src="images/user/weixin@2x.png" class="h-15" >
+								<div class="fs-14 c-212121 fw-800 ml-6">
+									微信客服
+								</div>
+							</div>
+							<div onclick="coypWeixin()" class="d-wb wba-c mt-9 ml-7">
+								<div class="fs-14 c-212121">
+									boyayule001
+								</div>
+								<div class="fs-10 c-212121 fw-800 ml-6 w-67 bs-c d-wb wbp-e" style="background-image: url(images/user/duobian@2x.png);">
+									复制微信号
+								</div>
+							</div>
+						</div>
+					</div>
+					<div @click="isShowFindPassword = !isShowFindPassword" class="h-40 bc-CCAC67 fs-15 fw-800 d-wb wb-c">
+						关闭
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			// class="bc-E5E5E5"
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					ajaxData:{
+						username:"",
+						password:"",
+						code:""
+					},
+					placeholder:{
+						username:"请输入用户名",  //提示
+						password:"请输入密码",
+						code:"验证码"
+					},
+					isShowFindPassword:false,
+					codeStr:"",
+					expired_at:"",//图片过期时间
+					passwordType:"password",
+					captcha_key:"",
+					err:{
+						username:"",
+						password:"",
+						check:"",
+					}
+				},
+				mounted: function() {},
+				methods: {
+					ajaxDataFun:function(){  //登陆
+						if(v.ajaxData.username.length<6){
+							alert("请输入6位用户名");
+							return
+						}
+						if(v.codeStr==""){
+							v.ajaxDataFun1(0)
+							return
+						}
+						if(v.ajaxData.code==""){
+							alert("请输入验证码");
+							return
+						}
+						if(Date.parse(v.expired_at.replace(/-/g,"/")) < (new Date()).getTime()){
+							alert("验证码过期");
+							return
+						}
+						if(v.ajaxData.password.length<6||v.ajaxData.password.match(/[a-zA-Z]{1,1}/g)==null){
+							alert("密码格式为6-12位数字和字母组合!");
+							return
+						}
+						apiajax({
+							url:"/api/authorizations/current",
+							method:"post",
+							data:{
+								values:{
+									name:v.ajaxData.username,
+									password:v.ajaxData.password,
+									captcha_key:v.captcha_key,
+									captcha_code:(v.ajaxData.code||'').toLowerCase(),
+								}
+							},
+							async:false,
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								v.ajaxData.code = "";
+								v.ajaxDataFun1();
+							}else{
+								$api.setStorage("token",ret);
+								v.openWin("main");
+							}
+						});
+					},
+					ajaxDataFun1:function(){ //获取验证码
+						if(v.ajaxData.username.length<6||v.ajaxData.username.length>12){
+							alert("密码格式为6-12位数字和字母组合!")
+							return
+						}
+						var _this = this;
+						apiajax({
+							url:"/api/captchas/login",
+							method:"post",
+							data:{
+								values:{
+									name:v.ajaxData.username
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								_this.codeStr = ret.captcha_image_content;
+								_this.captcha_key = ret.captcha_key;
+								_this.expired_at = ret.expired_at;
+							}
+						});
+					},
+					openWin:function(winName){
+						if(winName=="register"){
+							window.location.href="./register.html"
+						}
+						if(winName=="main"){
+							window.location.href="./main.html"
+						}
+					}
+				}
+			});
+			function checkErr(name){
+				if(name=='username'){
+					if(v.ajaxData.username.length<6||v.ajaxData.username.length>12){
+						v.err[name] = "请输入6-12位的用户名"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+					v.ajaxDataFun1();
+				}
+				if(name=="password"){
+					if(v.ajaxData.password.length<6||v.ajaxData.password.match(/[a-zA-Z]{1,1}/g)==null){
+						v.err[name] = "密码格式为6-12位数字和字母组合"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+				}
+				if(name=="check"){
+					if(v.ajaxData.password!=v.ajaxData.checkPassword){
+						v.err[name] = "密码不一致"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

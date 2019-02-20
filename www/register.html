@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>注册</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			.error::-webkit-input-placeholder{
+				color:#f00;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div id="bVue">
+			<header-vue title="注册账号" path=""></header-vue>
+			<div class="d-wb wb-c" style="background-image: url(images/user/register/zhuce_bg.png);background-size:100%;background-position:top;background-repeat:no-repeat;">
+				<div class="h-700">
+					
+				</div>
+				<div class="bc-0B102A h-460 w-345 br-5 p-15270027 bs-bb d-wb wbo-v">
+					<div class="d-wb wba-c fs-18 c-fff h-47">
+						<div class="w-100 fw-800">
+							新用户注册
+						</div>
+						<div class="wbf-1 d-wb wb-c fs-17 fw-800 c-000">
+							
+						</div>
+						<div class="w-100">
+							
+						</div>
+					</div>
+					<div class="h-40 d-wb wba-c bc-fff p-0005">
+						<img src="images/user/login/icon_user.png" class="w-16"/>
+						<div class="h-20 wbf-1 d-wb wba-c">
+							<input onblur="checkErr('username')" v-model="ajaxData.username" type="text" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.username" />
+						</div>
+						<img v-if="ajaxData.username!=''" @click="ajaxData.username=''" src="images/user/login/icon_dele.png" class="h-12"/>
+					</div>
+					<div class="h-25 d-wb wba-c c-f00 fs-11 ">
+						{{err.username}}
+					</div>
+					<div class="h-40 d-wb wba-c bc-fff p-0005">
+						<img src="images/user/login/icon_password.png" class="w-16"/>
+						<div class="h-20 wbf-1 d-wb wba-c">
+							<input onblur="checkErr('password')" v-model="ajaxData.password" v-bind:type="passwordType" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.password"  />
+						</div>
+						<img v-if="passwordType=='password'" @click="passwordType='text'" src="images/user/login/icon_eye_dafa.png" class="h-12"/>
+						<img v-else @click="passwordType='password'" src="images/user/login/icon_eye_sele.png" class="h-12"/>
+					</div>
+					<div class="h-25 d-wb wba-c c-f00 fs-11 ">
+						{{err.password}}
+					</div>
+					<div class="h-40 d-wb wba-c bc-fff p-0005">
+						<img src="images/user/login/icon_password.png" class="w-16"/>
+						<div class="h-40 wbf-1 d-wb wba-c bc-fff">
+							<input onblur="checkErr('check')" v-model="ajaxData.checkPassword" v-bind:type="passwordType1" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.checkPassword" />
+						</div>
+						<img v-if="passwordType1=='password'" @click="passwordType1='text'" src="images/user/login/icon_eye_dafa.png" class="h-12"/>
+						<img v-else @click="passwordType1='password'" src="images/user/login/icon_eye_sele.png" class="h-12"/>
+					</div>
+					<div class="h-25 d-wb wba-c c-f00 fs-11 ">
+						{{err.check}}
+					</div>
+					<div class="h-40 d-wb wba-c ">
+						<div class="h-40 wbf-1 d-wb wba-c bc-fff">
+							<input v-model="ajaxData.code" type="text" class="d-b wbf-1 h-20 lh-20 o-n bs-bb pl-5 fs-10" v-bind:placeholder="placeholder.code" />
+						</div>
+						<div @click="ajaxDataFun1" v-if="codeStr==''" class="w-80 h-40 ml-15 d-wb wb-c bc-464059 c-D9D6D6 fs-12">
+							获取验证码
+						</div>
+						<div @click="ajaxDataFun1" v-else class="w-80 h-40 ml-15 d-wb wb-c bc-464059 c-D9D6D6 fs-12">
+							<img v-bind:src="codeStr" class="w-80 h-40">
+						</div>
+					</div>
+					<div @click="check=!check" class="h-40 d-wb wba-c  mb-15">
+						<img v-if="check==true" src="images/user/register/icon_greet.png" class="h-14 w-14">
+						<div v-if="check==false" class="h-14 w-14 bs-bb b-1-fff">
+							
+						</div>
+						<div class="fs-10 d-wb wba-c c-fff ml-5">
+							我已届满合法博彩年龄，且同意各项开户条约
+						</div>
+					</div>
+					<div @click="ajaxDataFun" class="h-44 d-wb wb-c b-top-CCAC67-EECE8A  fs-18 c-0B102A fw-800" >
+						完成注册
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			// class="bc-E5E5E5"
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					ajaxData:{
+						username:"",
+						password:"",
+						checkPassword:"",
+						code:""
+					},
+					placeholder:{
+						username:"请输入6-12位的用户名",  //提示
+						password:"请输入密码",
+						checkPassword:"再次输入密码",
+						code:"请输入验证码",
+					},
+					passwordType:"password",
+					passwordType1:"password",
+					codeStr:"",
+					expired_at:"",//图片过期时间
+					captcha_key:"",
+					check:true,
+					err:{
+						username:"",
+						password:"",
+						check:"",
+					},
+					code:parseQueryString().code||"",//推广码,
+				},
+				mounted: function() {},
+				methods: {
+					ajaxDataFun:function(){  //注册
+						if(v.check==false){
+							alert("请同意条约!")
+							return
+						}
+						if(v.codeStr==""){
+							v.ajaxDataFun1(0)
+							return
+						}
+						if(v.ajaxData.username.length<6||v.ajaxData.username.length>12){
+							alert("请输入6-12位的用户名")
+							return
+						}
+						if(Date.parse(v.expired_at.replace(/-/g,"/")) < (new Date()).getTime()){
+							alert("请重新获取验证码")
+							return
+						}
+						if(v.ajaxData.password.length<6||v.ajaxData.password.match(/[a-zA-Z]{1,1}/g)==null){
+							alert("密码格式为6-12位必须包含数字和字母的组合")
+							return
+						}
+						if(v.ajaxData.password!=v.ajaxData.checkPassword){
+							alert("密码不一致")
+							return
+						}
+						if(v.ajaxData.code==""){
+							alert("请输入验证码!")
+							return
+						}
+						var values = {
+							name:v.ajaxData.username,
+							password:v.ajaxData.password,
+							captcha_key:v.captcha_key,
+							captcha_code:(v.ajaxData.code||'').toLowerCase(),
+							password_confirmation:v.ajaxData.checkPassword,
+						} 
+						if(!!v.code){
+							values.code = v.code;
+						}
+						apiajax({
+							url:"/api/register",
+							method:"post",
+							data:{
+								values:values
+							},
+							async:false,
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								v.ajaxData.code = "";
+								v.ajaxDataFun1();
+							}else{
+								$api.setStorage("token",ret);
+								v.openWin("main");
+							}
+						});
+					},
+					ajaxDataFun1:function(){ //获取验证码
+						if(v.check==false){
+							alert("请同意条约!")
+							return
+						}
+						if(v.ajaxData.username.length<6||v.ajaxData.username.length>12){
+							alert("请输入6-12位的用户名")
+							return
+						}
+						var _this = this;
+						apiajax({
+							url:"/api/captchas/register",
+							method:"post",
+							data:{
+								values:{
+									name:v.ajaxData.username
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								_this.codeStr = ret.captcha_image_content;
+								_this.captcha_key = ret.captcha_key;
+								_this.expired_at = ret.expired_at;
+							}
+						});
+					},
+					openWin:function(winName){
+						if(winName=="ziliaoChange"){
+							window.location.href="./user/ziliaoChange.html"
+						}
+						if(winName=="main"){
+							window.location.href="./main.html"
+						}
+					}
+				}
+			});
+			function checkErr(name){
+				if(name=='username'){
+					if(v.ajaxData.username.length<6||v.ajaxData.username.length>12){
+						v.err[name] = "请输入6-12位的用户名"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+					v.ajaxDataFun1();
+				}
+				if(name=="password"){
+					if(v.ajaxData.password.length<6||v.ajaxData.password.match(/[a-zA-Z]{1,1}/g)==null){
+						v.err[name] = "密码格式为6-12位必须包含数字和字母的组合"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+				}
+				if(name=="check"){
+					if(v.ajaxData.password!=v.ajaxData.checkPassword){
+						v.err[name] = "密码不一致"
+						return
+					}else{
+						v.err[name] = ""
+						return
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

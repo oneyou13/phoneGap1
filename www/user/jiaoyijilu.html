@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>交易记录</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			/*向下*/
+			.triangle_border_down{
+			    width:0;
+			    height:0;
+			    border-width:2rem 1.3rem 0 1.3rem ;
+			    border-style:solid;
+			    border-color:#CCAC67 transparent transparent transparent;/*灰 透明 透明 */
+			}
+			
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="交易记录"></header-vue>
+			<div class="h-44 d-wb wba-c fs-18 fw-800">
+				<div v-if="nowIndex==0" @click="switchIndex(0)" class="wbf-1n bc-CCAC67 c-0B102A d-wb wb-c h-44 p-r">
+					账户明细
+					<div class="triangle_border_down p-a t-44 l-83">
+						
+					</div>
+				</div>
+				<div v-else @click="switchIndex(0)" class="wbf-1 bc-0B102A c-fff d-wb wb-c h-44">
+					账户明细
+				</div>
+				<div v-if="nowIndex==1" @click="switchIndex(1)" class="wbf-1n bc-CCAC67 c-0B102A d-wb wb-c h-44 p-r">
+					投注明细
+					<div class="triangle_border_down p-a t-44 l-83">
+						
+					</div>
+				</div>
+				<div v-else @click="switchIndex(1)" class="wbf-1 bc-0B102A c-fff d-wb wb-c h-44">
+					投注明细
+				</div>
+			</div>
+			<div class="mt-32 mb-16 bc-fff d-wb wbo-v">
+				<div class="d-wb wba-c fs-14 c-212121">
+					<div class="wbf-1 d-wb wb-c">
+							开始时间
+					</div>
+					<div class="wbf-1 d-wb wb-c">
+						  结束时间
+					</div>
+				</div>
+				<div class="d-wb wba-c mt-7">
+					<div class="w-16">
+						
+					</div>
+					<div class="h-40 w-150 d-wb wb-c wbs-00002002-00000000005 br-5 p-r ">
+						<div class="w-80 fs-14 c-212121 wb-ba">
+							{{startTime}}
+							<input type="date" v-model="startTime" class="p-a l-0 t-0 fs-14 c-212121 h-40 w-150 wa-n o-n wo-00" />
+						</div>
+						<img src="../images/jiaoyijilu/icon_rili.png" class="h-23 ml-20" >
+					</div>
+					<div class="wbf-1">
+						
+					</div>
+					<div class="w-30 h-1 bc-000">
+						
+					</div>
+					<div class="wbf-1">
+						
+					</div>
+					<div class="h-40 w-150 d-wb wb-c wbs-00002002-00000000005 br-5 p-r">
+						<div class="w-80 fs-14 c-212121 wb-ba">
+							{{endTime}}
+							<input type="date" v-model="endTime" class="p-a l-0 t-0 fs-14 c-212121 h-40 w-150 wa-n o-n wo-00" />
+						</div>
+						<img src="../images/jiaoyijilu/icon_rili.png" class="h-23 ml-20" >
+					</div>
+					<div class="w-16">
+						
+					</div>
+				</div>
+			</div>
+			<div v-if="nowIndex==0" class="">
+				<div class="h-10 bc-e5e5e5"></div>
+				<div class=" h-50 bb-1-e5e5e5 d-wb wba-c p-0015 fs-13 fw-800 bc-fff">
+					<div @click="switchIndex_mx(0)" :class="{'btn_active':mx.index==0}" class="w-60 h-25 br-5 d-wb wb-c" c-class=".btn_active{bc-CCAC67 c-fff}">
+						存款
+					</div>
+					<div @click="switchIndex_mx(1)" :class="{'btn_active':mx.index==1}" class="w-60 h-25 br-5 d-wb wb-c">
+						取款
+					</div>
+					<div @click="switchIndex_mx(2)" :class="{'btn_active':mx.index==2}" class="w-60 h-25 br-5 d-wb wb-c">
+						转账
+					</div>
+					<div @click="switchIndex_mx(3)" :class="{'btn_active':mx.index==3}" class="w-60 h-25 br-5 d-wb wb-c">
+						红利
+					</div>
+				</div>
+				<div class="h-40 d-wb wba-c p-0014 fs-13 fw-800 bc-e5e5e5">
+					<div class="">
+						交易类型
+					</div>
+					<div class="wbf-1 d-wb wb-c">
+						金额
+					</div>
+					<div class="">
+						状态
+					</div>
+				</div>
+			</div>
+			<div v-if="nowIndex==1" class="">
+				<div class="h-40 d-wb wba-c p-0014 fs-13 fw-800 bc-e5e5e5">
+					<div class="">
+						平台游戏
+					</div>
+					<div class="wbf-1 d-wb wb-c">
+						下注
+					</div>
+					<div class="">
+						w/l
+					</div>
+				</div>
+			</div>
+			<div class="wbf-1 ">
+				<div v-show="nowIndex==0" class="">
+					<div v-show="mx.index==0" v-for='ret in mx.retData0' class="p-0014 h-44 bb-1-e5e5e5 d-wb wba-c">
+						<div class="w-150">
+							<div class="fs-12 fw-800">
+								{{ret.fail_reason}}
+							</div>
+							<div class="c-212121 mt-2">
+								{{ret.created_at}}
+							</div>
+						</div>
+						<div class="wbf-1 d-wb wba-c fs-12 c-212121 pl-23">
+							￥{{ret.money}}
+						</div>
+						<div v-if="ret.status==1" class="c-CCAC67 fs-12">
+							待确认
+						</div>
+						<div v-else-if="ret.status==2" class="c-34AAE1 fs-12">
+							充值成功
+						</div>
+						<div v-else-if="ret.status==3" class="c-999999 fs-12">
+							充值失败
+						</div>
+					</div>
+					<div v-show="mx.index==1" v-for='ret in mx.retData1' class="p-0014 h-44 bb-1-e5e5e5 d-wb wba-c">
+						<div class="w-150">
+							<div class="fs-12 fw-800">
+								{{ret.fail_reason}}
+							</div>
+							<div class="c-212121 mt-2">
+								{{ret.created_at}}
+							</div>
+						</div>
+						<div class="wbf-1 d-wb wba-c fs-12 c-212121 pl-23">
+							￥{{ret.money}}
+						</div>
+						<div v-if="ret.status==1" class="c-CCAC67 fs-12">
+							待确认
+						</div>
+						<div v-else-if="ret.status==2" class="c-34AAE1 fs-12">
+							提款成功
+						</div>
+						<div v-else-if="ret.status==3" class="c-999999 fs-12">
+							提款失败
+						</div>
+					</div>
+					<div v-show="mx.index==2" v-for='ret in mx.retData2' class="p-0014 h-44 bb-1-e5e5e5 d-wb wba-c">
+						<div class="w-150">
+							<div v-if="!!ret.transfer_out_account" class="fs-12 fw-800">
+								{{ret.transfer_out_account}}/{{ret.transfer_in_account}}
+							</div>
+							<div class="c-212121 mt-2">
+								{{ret.created_at}}
+							</div>
+						</div>
+						<div class="wbf-1 d-wb wba-c fs-12 c-212121 pl-23">
+							￥{{ret.money}}
+						</div>
+						<div class="c-34AAE1 fs-12">
+							成功
+						</div>
+					</div>
+					<div v-show="mx.index==3" v-for='ret in mx.retData3' class="p-0014 h-44 bb-1-e5e5e5 d-wb wba-c">
+						<div class="w-150">
+							<div v-if="ret.type==1" class="fs-12 fw-800">
+								充值红利
+							</div>
+							<div v-else-if="ret.type==2" class="fs-12 fw-800">
+								平台红利
+							</div>
+							<div v-else-if="ret.type==3" class="fs-12 fw-800">
+								返水
+							</div>
+							<div class="c-212121 mt-2">
+								{{ret.created_at}}
+							</div>
+						</div>
+						<div class="wbf-1 d-wb wba-c fs-12 c-212121 pl-23">
+							￥{{ret.money}}
+						</div>
+						<div class="c-34AAE1 fs-12">
+							成功
+						</div>
+					</div>
+					<div v-if="mx['retData'+mx.index].length==0" class="p-0014 h-88 fs-14 d-wb wb-c c-212121">
+						{{showNodataMessage}}
+					</div>
+				</div>
+				<div v-show="nowIndex==1" class="">
+					<div v-for='ret in tz.retData' class="p-0014 h-44 bb-1-e5e5e5 d-wb wba-c">
+						<div class="w-150">
+							{{ret.game.name}}
+						</div>
+						<div class="wbf-1 d-wb wba-c fs-12 c-212121 pl-25">
+							￥{{ret.betAmount}}
+						</div>
+						<div v-if="parseFloat(ret.betAmount)-parseFloat(ret.netAmount)>0" class="fs-12 c-E1255B">
+							-{{parseFloat(ret.betAmount)-parseFloat(ret.netAmount)}}
+						</div>
+						<div v-else-if="parseFloat(ret.betAmount)-parseFloat(ret.netAmount)==0" class="fs-12 c-666">
+							0
+						</div>
+						<div v-else class="fs-12 c-34AAE1 ">
+							+{{(parseFloat(ret.netAmount)-parseFloat(ret.betAmount)).toFixed(2)}}
+						</div>
+					</div>
+					<div v-if="tz.retData.length==0" class="p-0014 h-88 fs-14 d-wb wb-c c-212121">
+						{{showNodataMessage}}
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index="3"
+				path="../"
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,//大的type切换
+					mx:{
+						index:0,
+						retData0:[],//type0的数据
+						retData1:[],//type1的数据
+						retData2:[],//type2的数据
+						retData3:[],//type3的数据
+					},
+					tz:{
+						retData:[],//投注的数据
+					},
+					startTime:"2018-12-27",
+					endTime:"2018-12-27",
+					showNodataMessage:"加载中..." //您暂时还没有交易记录~
+				},
+				computed:{
+					_ajaxUrl:function(){
+						if(this.mx.index==0){
+							return '/api/user/list/recharge'
+						}
+						if(this.mx.index==1){
+							return '/api/user/list/drawing'
+						}
+						if(this.mx.index==2){
+							return '/api/user/list/transfer'
+						}
+						if(this.mx.index==3){
+							return '/api/user/list/dividend'
+						}
+					}
+				},
+				mounted: function() {
+					var now = new Date();
+					var add0 = function(value){
+						if(value<10){
+							return '0'+value
+						}else{
+							return value
+						}
+					}
+					this.endTime = now.getFullYear()+"-"+add0(now.getMonth()+1)+"-"+add0(now.getDate());
+					now.setMonth(now.getMonth()-1)
+					this.startTime = now.getFullYear()+"-"+add0(now.getMonth()+1)+"-"+add0(now.getDate());
+					this.ajaxDataFun();
+					this.ajaxDataFun1();
+				},
+				methods: {
+					switchIndex:function(index){
+						this.nowIndex=index;
+					},
+					switchIndex_mx:function(index){
+						this.mx.index=index;
+					},
+					ajaxDataFun:function(){  //明细数据
+						var _this= this;
+						if(_this.mx['retData'+_this.mx.index].length!=0){
+							return
+						}
+						_this.showNodataMessage = "加载中...";
+						(function(index){
+							apiajax({
+								url:_this._ajaxUrl,
+								method:"get",
+								data:{
+									values:{
+										start_at:_this.startTime +" 00:00:00",
+										end_at:_this.endTime+" 23:59:59"
+									}
+								}
+							},function(ret,err){
+								_this.showNodataMessage = "您暂时还没有交易记录~"
+								if(err&&err.status_code>400){
+									
+								}else{
+									_this.mx['retData'+index] = ret.data;
+								}
+							},1);
+						})(_this.mx.index)
+					},
+					ajaxDataFun1:function(){  //投注明细
+						apiajax({
+							url:'/api/user/list/record',
+							method:"get",
+							data:{
+								values:{
+									include:"game",
+									start_at:this.startTime +" 00:00:00",
+									end_at:this.endTime+" 23:59:59"
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.tz.retData = ret.data;
+							}
+						},1);
+					},
+				},
+				watch:{
+					"_ajaxUrl":function(nl,ol){
+						this.ajaxDataFun();
+					},
+					"startTime":function(nl,ol){
+						this.mx.retData0 = [];
+						this.mx.retData1 = [];
+						this.mx.retData2 = [];
+						this.mx.retData3 = [];
+						this.ajaxDataFun();
+						this.tz.retData = [];
+						this.ajaxDataFun1();
+					},
+					"endTime":function(nl,ol){
+						this.mx.retData0 = [];
+						this.mx.retData1 = [];
+						this.mx.retData2 = [];
+						this.mx.retData3 = [];
+						this.ajaxDataFun();
+						this.tz.retData = [];
+						this.ajaxDataFun1();
+					},
+				}
+			});
+		</script>
+	</body>
+
+</html>

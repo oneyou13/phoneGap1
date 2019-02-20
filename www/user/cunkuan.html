@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../css/api.css" rel="stylesheet" />
+    <script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/api.js"></script>
+    <style>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <style rem="10">
+
+    </style>
+</head>
+
+<body>
+    <div class="d-wb wbo-v h100 w100" id="bVue">
+        <header-vue title="存款"></header-vue>
+        <div class="wbf-1 bc-F5F5F5">
+            <div class="mt-10 fs-15">
+                <div class="d-wb wba-c p-0020 bb-1-eee h-40 bc-fff charge-type">
+                    <li @click='chargeType = 0' class="mr-20">
+                        <img :src="'../images/user/chongzhi/zhifubao@2x' + (chargeType === 0 ? '' : '_gray') + '.png'"
+                            class="h-20 w-20" />
+                        <span :class="[{ 'c-00A0E9': chargeType === 0 } , 'fs-15', 'ml-3']">
+                            支付宝
+                        </span>
+                    </li>
+                    <li @click='chargeType = 1' class="mr-20">
+                        <img :src="'../images/user/chongzhi/icon_card@2x' + (chargeType === 1 ? '' : '_gray') + '.png'"
+                            class="h-20 w-20" />
+                        <span :class="[{ 'c-00A0E9': chargeType === 1 } , 'fs-15', 'ml-3']">
+                            银行卡
+                        </span>
+                    </li>
+
+                </div>
+                <div class="fs-15 p-0020 bc-fff">
+                    <div class="h-40 d-wb wba-c bb-1-f5f5f5" v-if='chargeType === 1'>
+                        <div class="d-wb wba-c fw-800">
+                            选择银行卡:
+                        </div>
+                        <div @click="selectCardModal=!selectCardModal" class="d-wb wba-c wbf-1 p-l-10">
+                            <img v-if='selectCardInfo.type' :src="'../images/user/chongzhi/' + (CONFIG.BANK_LIST[selectCardInfo.type] ? CONFIG.BANK_LIST[selectCardInfo.type] : 'ylzf') + '.png'" class="h-20 w-20">
+                            <div v-if='selectCardInfo.type' class="fs-15">
+                                {{ selectCardInfo.type }}
+                            </div>
+                            <div v-if='selectCardInfo.type' class="fs-10 c-CCAC67 ml-4">
+                                尾号 {{ selectCardInfo.bank_card | subLastFourNumber}}
+                            </div>
+                            <div v-else class="fs-15 c-CCAC67 ml-4">
+                                请选择
+                            </div>
+                            <div class="wbf-1">
+
+                            </div>
+                            <img src="../images/user/icon_arrow2@2x.png" class="h-10">
+                        </div>
+                    </div>
+                    <div class="h-40 d-wb wba-c bb-1-f5f5f5 ">
+                        <div class="d-wb wba-c fw-800">
+                            存款金额:
+                        </div>
+                        <div class="wbf-1 d-wb wba-c h-40 pl-11">
+                            <input type="text" v-model="ajaxData1.money" class="d-b h-20 wbf-1 o-n lh-20"
+                                placeholder="请输入具体充值金额" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="mt-40 d-wb wba-c fs-12 c-212121 p-0020">
+					<input type="radio" checked="" disabled="disabled" class="mr-5 h-15 w-15">
+					不参与活动
+				</div> -->
+            <div @click="submitCharge" class="m-0020 mt-50  h-40 d-wb wb-c b-top-CCAC67-EECE8A fs-18 fw-800">
+                充值
+            </div>
+        </div>
+        <div v-if="selectCardModal" class="p-f l-0 t-0 w100 h100 bc-00000000050 d-wb wbo-v wbp-e">
+            <div @click.stop="selectCardModal = !selectCardModal"
+                class="p-0015 d-wb wbp-e wba-c h-40 bc-e5e5e5 fs-14 c-212121">
+                取消
+            </div>
+            <div class="bc-fff h-350 p-0015 w100 fs-15 o-a bs-bb">
+                <div @click="selectCardInfo = item; selectCardModal = !selectCardModal;" v-for="item in bankList" class="bb-1-e5e5e5 h-40 d-wb wba-c">
+                    <img :src="'../images/user/chongzhi/' + (CONFIG.BANK_LIST[item.type] ? CONFIG.BANK_LIST[item.type] : 'ylzf') + '.png'" class="h-20 w-20">
+                    <div class="fs-15">
+                        {{item.type}}
+                    </div>
+                    <div class="fs-10 c-CCAC67 ml-4 wbf-1 ml-10 t-r">
+                        尾号 {{ item.bank_card | subLastFourNumber}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <foot-vue :index="3" path="../"></foot-vue>
+    </div>
+    <script src="../js/config.js"></script>
+    <script>
+        var v = new Vue({
+            el: "#bVue",
+            data: {
+                nowIndex: 0,
+                ajaxData1: {
+                    form_token: "",//防止重复充值的token
+                    money: "",
+                    type: "alipay"
+                },
+                bankList: [],
+                selectCardInfo: {},
+                selectCardModal: false,
+                chargeType: 0,  // 0-支付宝 1-银行卡
+                canAjax: true,
+            },
+            filters: {
+                subLastFourNumber: function(val) {
+                    return val.substring(val.length - 4);
+                }
+            },
+            created: function () {
+                this.getBankList();
+            },
+            mounted: function () {
+                this.ajaxDataFun();
+            },
+            methods: {
+                ajaxDataFun: function () {  //充值token
+                    apiajax({
+                        url: "/api/recharge",
+                        method: "get",
+                        data: {
+                            values: {}
+                        }
+                    }, function (ret, err) {
+                        if (err && err.status_code > 400) {
+                            alert(err.message)
+                        } else {
+                            v.ajaxData1.form_token = ret.form_token;
+                        }
+                    }, 1);
+                },
+                submitCharge: function () {
+                    if(this.chargeType === 0) {
+                        this.ajaxDataFun1();
+                    } else{
+                        this.submitBankCharge();
+                    }
+                },
+                ajaxDataFun1: function () {  //提交充值
+                    var _this = this;
+                    if (_this.canAjax == false) {
+                        return
+                    }
+                    if (_this.canAjax == true) {
+                        _this.canAjax = false
+                    }
+                    if (parseInt(v.ajaxData1.money) == 0 || v.ajaxData1.money == "") {
+                        alert("请输入有效的存款金额");
+                        return
+                    }
+                    if (v.ajaxData1.form_token == "") {
+                        alert("请刷新页面!再充值!");
+                        return
+                    }
+                    apiajax({
+                        url: "/api/recharge",
+                        method: "post",
+                        data: {
+                            values: v.ajaxData1
+                        },
+                        async: false,
+                    }, function (ret, err) {
+                        _this.canAjax = true
+                        if (err && err.status_code > 400) {
+                            v.ajaxDataFun();
+                        } else {
+                            var tempwindow = window.open('_blank');
+                            tempwindow.location = ret.url;
+                            window.location.href = "/user/index.html"
+                        }
+                    }, 1);
+                },
+                submitBankCharge: function () {  //提交银行卡充值
+                    var _this = this;
+                    if (_this.canAjax == false) {
+                        return
+                    }
+                    if (_this.canAjax == true) {
+                        _this.canAjax = false
+                    }
+                    if (parseInt(v.ajaxData1.money) == 0 || v.ajaxData1.money == "") {
+                        alert("请输入有效的存款金额");
+                        return
+                    }
+                    if (parseInt(v.ajaxData1.money) < 5000 || parseInt(v.ajaxData1.money) > 50000) {
+                        alert("金额最低5000，最高50000");
+                        return;
+                    }
+                    if (v.ajaxData1.form_token == "") {
+                        alert("请刷新页面!再充值!");
+                        return
+                    }
+                    apiajax({
+                        url: "/api/bank_recharge",
+                        method: "post",
+                        data: {
+                            values: {
+                                money: v.ajaxData1.money,
+                                form_token: v.ajaxData1.form_token,
+                                bank_id: this.selectCardInfo.id
+                            }
+                        },
+                        async: false,
+                    }, function (ret, err) {
+                        _this.canAjax = true
+                        if (err && err.status_code > 400) {
+                            v.ajaxDataFun();
+                        } else {
+                            var tempwindow = window.open('_blank');
+                            tempwindow.location = ret.url;
+                            window.location.href = "/user/index.html"
+                        }
+                    }, 1);
+                },
+                getBankList: function () {  //银行卡列表
+                    var _this = this;
+                    apiajax({
+                        url: "/api/user/bank_list",
+                        method: "get",
+                        data: {
+                            values: {}
+                        }
+                    }, function (ret, err) {
+                        if (err && err.status_code > 400) {
+
+                        } else {
+                            _this.bankList = ret.data;
+                        }
+                    }, 1);
+                }
+            },
+            watch: {
+                "ajaxData1.money": function (nl, ol) {
+                    this.ajaxData1.money = parseInt(((nl + '').match(/\d/g) || [0]).join(""))
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

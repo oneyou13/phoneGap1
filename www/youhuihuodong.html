@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>优惠活动</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			.bgc{
+				background-image: url(images/youhuihuodong/casino-3720812_1920_2.png);
+				background-repeat: no-repeat;
+				background-size: 100% auto;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="优惠活动" theme="light"></header-vue>
+			<div class="wbf-1 bc-0B102A bgc">
+				<div class="h-160">
+					
+				</div>
+				<div @click="openWin('youhuihuodong_detail',ret)" v-for="ret in retData" class="d-wb wb-c mt-20">
+					<img v-bind:src="AJAXURL+ret.title_img" class="w-345 h-91" >
+				</div>
+				<div v-if="retData.length==0" class="d-wb wb-c h-60 c-fff fs-15">
+					{{showMessage}}
+				</div>
+			</div>
+			<foot-vue
+				:index="1"
+				path=""
+				v-once
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					retData:[],
+					showMessage:"暂无优惠活动~"
+				},
+				mounted: function() {
+					this.ajaxDataFun();
+				},
+				methods: {
+					ajaxDataFun:function(){  //获取用户个人信息
+						this.showMessage = ""
+						apiajax({
+							url:"/api/activity",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							this.showMessage = "暂无优惠活动~"
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret.data;
+							}
+						});
+					},
+					openWin:function(winName,ret){
+						if(winName == 'youhuihuodong_detail'){
+							window.location.href = "./youhuihuodong_detail.html?id="+ret.id
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

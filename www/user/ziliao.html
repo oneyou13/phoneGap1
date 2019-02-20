@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>会员资料</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="会员资料"></header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+				<div class="mt-10 fs-15">
+					<div class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							会员名：
+						</div>
+						<div class="c-666666 fs-14">
+							{{retData.name}}
+						</div>
+					</div>
+					<div v-if="!!retData.real_name" @click="showKeFuMessage = '修改你的持卡人名字';callKefu=!callKefu"  class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							持卡人姓名：
+						</div>
+						<div class="c-666666 fs-14">
+							{{retData.real_name}}
+						</div>
+					</div>
+					<div v-else @click="openWin('name')" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							持卡人姓名：
+						</div>
+						<div class="c-666666 fs-14">
+							去绑定
+						</div>
+					</div>
+					<div v-if="!!retData.phone" @click="showKeFuMessage = '修改你的手机号码';callKefu=!callKefu"  class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							手机号码:
+						</div>
+						<div class="c-666666 fs-14">
+							{{retData.phone}}
+						</div>
+					</div>
+					<div v-else @click="openWin('phone')" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							手机号码:
+						</div>
+						<div class="c-666666 fs-14">
+							去绑定
+						</div>
+					</div>
+					<!-- <div class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							语言
+							<div class="c-999 ml-5 fw-100 d-wb wba-c">
+								Language
+							</div>
+						</div>
+						<div class="c-666666 fs-14 fs-15 c-999 d-wb wba-c">
+							简体中文
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div> -->
+				</div>
+				<div class="mt-14 fs-15">
+					<div @click="showKeFuMessage = '修改密码';callKefu=!callKefu" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							登陆密码：
+						</div>
+						<div class="c-666666 fs-14">
+							修改
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div>
+					<div v-if="retData.is_bind_withdrawals==0" @click="openWin('tikuan')" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							提款密码：
+						</div>
+						<div class="c-666666 fs-14">
+							去绑定
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div>
+					<div v-else  @click="openWin('xiugaitikuanmima')" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							提款密码：
+						</div>
+						<div class="c-666666 fs-14">
+							******
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div>
+					<div v-if="retData.is_bind_ali==1" @click="showKeFuMessage = '修改你的支付宝';callKefu=!callKefu" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							支付宝
+						</div>
+						<div class="c-666666 d-wb wba-c fs-14">
+							去修改
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div>
+					<div v-else @click="openWin('zhifubao')" class="h-40 d-wb wba-c bb-1-f5f5f5 p-0015 bc-fff">
+						<div class="d-wb wba-c wbf-1 fw-800">
+							支付宝
+						</div>
+						<div class="c-666666 d-wb wba-c fs-14">
+							去绑定
+						</div>
+						<img src="../images/user/icon_arrow2.png" class="h-16 ml-10" >
+					</div>
+				</div>
+			</div>
+			<div v-if="callKefu" class="p-f w100 h100 d-wb wbo-v wb-c l-0 t-0 bc-00000000075 ">
+				<div class="w-300 h-360 bs-c d-wb wbo-v bc-fff br-5 o-h">
+					<div class="h-320 d-wb  wbp-c">
+						<div class="w-123">
+							<img src="../images/user/img_kef@2x.png" class="w-123 h-320">
+						</div>
+						<div class="wbf-1">
+							<div class="h-50">
+								
+							</div>
+							<div class="fs-10 c-212121">
+								请联系客服
+							</div>
+							<div class="fs-14 c-212121 mt-5">
+								{{showKeFuMessage}}：
+							</div>
+							<div class="d-wb wba-c bc-464059 br-5 h-40 w-155 mt-24">
+								<div class="ml-3 mr-3">
+									<img src="../images/user/xiugaimima/icon_QQ.png" class="h-28 w-28"/>	
+								</div>
+								<div class="wbf-1 d-wb wbo-v wbp-c fs-14 c-fff pl-1">
+									<div class="d-wb wba-c">
+										客服QQ:
+									</div>
+									<div class="d-wb wba-c">
+										152323323
+									</div>
+								</div>
+							</div>
+							<div class="d-wb wba-c bc-464059 br-5 h-40 w-155 mt-10">
+								<div class="ml-3 mr-3">
+									<img src="../images/user/xiugaimima/dianhua.png" class="h-28 w-28"/>	
+								</div>
+								<div class="wbf-1 d-wb wbo-v wbp-c fs-14 c-fff pl-1">
+									<div class="d-wb wba-c">
+										客服电话:
+									</div>
+									<div class="d-wb wba-c">
+										158 8688 9688
+									</div>
+								</div>
+							</div>
+							<div class="d-wb wba-c mt-31 ml-7">
+								<img src="../images/user/weixin@2x.png" class="h-15" >
+								<div class="fs-14 c-212121 fw-800 ml-6">
+									微信客服
+								</div>
+							</div>
+							<div onclick="coypWeixin()" class="d-wb wba-c mt-9 ml-7">
+								<div class="fs-14 c-212121">
+									boyayule001
+								</div>
+								<div class="fs-10 c-212121 fw-800 ml-6 w-67 bs-c d-wb wbp-e" style="background-image: url(../images/user/duobian@2x.png);">
+									复制微信号
+								</div>
+							</div>
+						</div>
+					</div>
+					<div @click="callKefu = !callKefu" class="h-40 bc-CCAC67 fs-15 fw-800 d-wb wb-c">
+						关闭
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index="3"
+				path="../"
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					retData:{
+						"id": 31,
+						"name": "---",
+						"avatar": "---",
+						"phone": "-----",
+						"real_name": "---",
+						"money": "----",
+						is_bind_ali: 0,//是否绑定支付宝
+						ali_user:"",//支付宝账号
+						is_bind_withdrawals:0,//是否绑定提款密码
+						"created_at": "2018-11-19 14:23:27",
+						"updated_at": "2019-01-23 12:28:51"
+					},
+					callKefu:false,
+					showKeFuMessage:"",
+					retData1:"-",//绑定银行卡的张数
+					canGo:false,
+				},
+				mounted: function() {
+					var  _this = this;
+					setTimeout(function(){
+						_this.ajaxDataFun();
+					},1000)
+					//alert("init")
+					this.ajaxDataFun();
+					// this.ajaxDataFun1();
+				},
+				methods: {
+					openWin:function(winName){
+						if(this.canGo==false){
+							return
+						}
+						if(winName=="xiugaimima"){
+							window.location.href="./xiugaimima.html"
+						}
+						if(winName=="tikuan"&&this.retData.is_bind_withdrawals==0){
+							window.location.href="./ziliaoChange.html?nowType=1&canNext=false"
+						}else if(winName=="tikuan"){
+							this.showKeFuMessage = '修改您的支付宝';
+							this.callKefu=!this.callKefu
+						}
+						if(winName=="name"&&!this.retData.real_name){
+							window.location.href="./ziliaoChange.html?nowType=0&canNext=false"
+						}else if(winName=="name"){
+							this.showKeFuMessage = '修改您的绑定名字';
+							this.callKefu=!this.callKefu
+						}
+						if(winName=="phone"&&!this.retData.phone){
+							window.location.href="./ziliaoChange.html?nowType=3&canNext=false"
+						}else if(winName=="phone"){
+							this.showKeFuMessage = '修改你的手机号码';
+							this.callKefu=!this.callKefu
+						}
+						if(winName=="zhifubao"){
+							if(!this.retData.real_name){
+								window.location.href="./ziliaoChange.html?nowType=0&canNext=true"
+							}else if(this.retData.is_bind_withdrawals == 0){
+								window.location.href="./ziliaoChange.html?nowType=1&canNext=true"
+							}else if(this.retData.is_bind_ali == 0){
+								window.location.href="./ziliaoChange.html?nowType=2&canNext=true"
+							}else{
+								this.showKeFuMessage = '修改你的支付宝';
+								this.callKefu=!this.callKefu
+							}
+						}
+						if(winName=="yinhangka_guanli"){
+							window.location.href="./yinhangka_guanli.html"
+						}
+						if(winName=="xiugaitikuanmima"){
+							window.location.href="./xiugaitikuanmima.html"
+						}
+					},
+					ajaxDataFun:function(){  //获取用户个人信息
+						apiajax({
+							url:"/api/user",
+							method:"get",
+							data:{
+								values:{}
+							},
+							async:false
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData = ret;
+								v.canGo = true;
+							}
+						},1);
+					},
+					ajaxDataFun1:function(){  //获取银行卡条数
+						apiajax({
+							url:"/api/user/bank_list",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.retData1 = ret.data.length||0;
+							}
+						},1);
+					},
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>修改密码</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="修改密码"></header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+				<div class="mt-15">
+					<input-vue 
+						:input_value.sync="xgmm.old.value" 
+						:placeholder="xgmm.old.placeholder" 
+						:label="xgmm.old.label"
+					></input-vue>
+					<input-vue 
+						:input_value.sync="xgmm.new.value" 
+						:placeholder="xgmm.new.placeholder" 
+						:label="xgmm.new.label"
+					></input-vue>
+					<input-vue 
+						:input_value.sync="xgmm.check.value" 
+						:placeholder="xgmm.check.placeholder" 
+						:label="xgmm.check.label"
+					></input-vue>
+				</div>
+				<div @click="ajaxDataFun" class="m-0044 mt-50  h-40 d-wb wb-c b-top-CCAC67-EECE8A fs-18 fw-800">
+					下一步
+				</div>
+			</div>
+			<foot-vue
+				:index="3"
+				path="../"
+			></foot-vue>
+		</div>
+		<script type="text/x-template" id="inputDom">
+			<div class="fs-15 p-0015 bc-fff">
+				<div class="h-40 d-wb wba-c bb-1-f5f5f5 ">
+					<div class="d-wb wba-c fw-800">
+						{{label}}
+					</div>
+					<div class="wbf-1 d-wb wba-c h-40 pl-11">
+						<input type="text" v-model="input_temp" class="d-b h-20 wbf-1 fs-10 o-n lh-20" :placeholder="placeholder" />
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			Vue.component("input-vue",{
+				data:function(){
+					return {
+						input_temp:""
+					}
+				},
+				props:["label","placeholder","input_value"],
+				template:"#inputDom",
+				methods:{
+					
+				},
+				watch: {
+					input_temp:function(nl, ol) {
+						this.$emit("update:input_value",nl)
+					}
+				},
+			})
+		</script>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					xgmm:{
+						old:{
+							value:"",
+							label:"旧密码:",
+							placeholder:"输入您的最近使用的密码"
+						},
+						new:{
+							value:"",
+							label:"新密码:",
+							placeholder:"请输入6-20位字符新密码"
+						},
+						check:{
+							value:"",
+							label:"确认密码:",
+							placeholder:"请再次输入确认你的密码"
+						}
+					}
+				},
+				mounted: function() {
+					
+				},
+				methods: {
+					ajaxDataFun:function(){
+						if(v.xgmm.check.value.length<6||v.xgmm.check.value.match(/[a-zA-Z]{1,1}/g)==null){
+							alert("请输入6位以上的含有字母的密码!")
+							return
+						}
+						if(v.xgmm.old.value.length<6||v.xgmm.old.value.match(/[a-zA-Z]{1,1}/g)==null){
+							alert("请输入6位以上的含有字母的密码!")
+							return
+						}
+						if(v.xgmm.new.value.length<6||v.xgmm.new.value.match(/[a-zA-Z]{1,1}/g)==null){
+							alert("请输入6位以上的含有字母的密码!")
+							return
+						}
+						if(v.xgmm.new.value!=v.xgmm.check.value){
+							alert("两次输入不一致")
+							return
+						}
+						apiajax({
+							url:"/api/user/password",
+							method:"PUT",
+							data:{
+								values:{
+									password_old:v.xgmm.old.value,
+									password:v.xgmm.new.value,
+									password_confirmation:v.xgmm.check.value,
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								alert("修改成功!");
+								apicloseWin();
+							}
+						},1);
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

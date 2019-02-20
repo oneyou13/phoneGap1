@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>最近游戏</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue 
+				title="最近游戏"
+				@right_click="changeState"
+				theme="light"
+			>
+				<template slot="right">
+					<div v-bind:class="{'c-34AAE1':rightText=='完成'}"  class="fs-12  c-212121">
+						{{rightText}}
+					</div>
+				</template>
+			</header-vue>
+			<div class="wbf-1 d-wb wbo-v bc-EEEEEE">
+				<div v-if="retData.length==0">
+					
+				</div>
+				<div v-else-if="rightText=='编辑'" class=" d-wb wb-c fs-10 c-666 mt-25 mb-15">
+					温馨提示：点击编辑可删除游戏记录哦~
+				</div>
+				<div v-else-if="selectData.length==0" class=" d-wb wb-c fs-10 c-666 mt-25 mb-15">
+					温馨提示：请选择游戏进行删除记录哦~
+				</div>
+				<div v-else class=" d-wb wb-c fs-10 c-666 mt-25 mb-15">
+					温馨提示：选择删除可删除游戏记录哦~
+				</div>
+				<div v-if="retData.length!=0" class="fs-10 p-0010 d-wb wfw-w">
+					<div v-for="ret in retData" @click="selectOrUnselect(ret.id)" class="w-80 h-110 d-wb wbo-v bc-fff br-5 m-0404  p-r">
+						<img src="images/zuijingyouxi/youxiicon.png" class="h-80 w-80"/>
+						<div class="h-30 d-wb wb-c fs-10">
+							QQa{{ret.id}}
+						</div>
+						<div v-if="haveThisData(ret.id)&&rightText=='完成'" class="p-a l-0 t-0 h100 w100 bc-00000000050 br-5 d-wb wba-e wbp-e">
+							<img src="images/zuijingyouxi/icon_dele.png" class="h-22 w-22" >
+						</div>
+					</div>
+				</div>
+				<div v-else class="fs-10 p-0010 c-666 d-wb wb-c wbf-1">
+					暂无游戏记录哦~
+				</div>
+			</div>
+			<div v-if="rightText=='完成'" class="d-wb wba-c h-49 p-0015 fw-800 p-f l-0 b-0 w100 bc-fff bs-bb">
+				<div @click="cancel('all')" class="fs-13 c-212121 d-wb wb-c">
+					全部删除
+				</div>
+				<div class="wbf-1">
+					
+				</div>
+				<div @click="cancel('select')" v-bind:class="{'c-999':selectData.length==0}" class="fs-13 c-E1255B d-wb wb-c">
+					删除选中
+				</div>
+			</div>
+			<confirm-vue 
+			    :show="confirm.show" 
+				:title="confirm.title" 
+				:left="confirm.left"
+				:right="confirm.right"
+				@check='confirm_check'
+				@cancel='confirm_cancel'
+			></confirm-vue>
+			<foot-vue
+				:index.sync="footer.index"
+				path=""
+			></foot-vue>
+		</div>
+		<script type="text/x-template" id="confirmDom">
+			<div v-if="show" class="p-f l-0 t-0 w100 h100 bc-00000000050 d-wb wb-c">
+				<div class="h-100 w-180 d-wb wbo-v bc-fff br-5 o-h">
+					<div v-html="title" class="wbf-1 d-wb wb-c fs-15 ta-c">
+					
+					</div>
+					<div class="h-30 d-wb wba-c w100 c-fff">
+						<div @click="check" class="h-30 wbf-1 d-wb wb-c bc-E1255B fs-13 fw-800">
+							{{left}}
+						</div>
+						<div @click="cancel" class="h-30 wbf-1 d-wb wb-c bc-999999 fs-13 fw-800">
+							{{right}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			Vue.component("confirm-vue",{
+				data:function(){
+					return {
+						
+					}
+				},
+				props:["title","left","right","show"],
+				template:"#confirmDom",
+				methods:{
+					check:function(){
+						this.$emit("check",{})
+					},
+					cancel:function(){
+						this.$emit("cancel",{})
+					}
+				}
+			});
+		</script>
+		<script>
+			// class="c-34AAE1 c-999"
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					footer:{
+						index:0
+					},
+					rightText:"编辑",
+					retData:[{id:1},{id:2},{id:3},{id:4},{id:5},{id:6},{id:7},{id:8},{id:9}],
+					selectData:[],//1,2,3,4,5,6
+					confirm:{
+						show:false,
+						title:"确定删除<br/>选中的游戏记录",
+						left:"删除",
+						right:"取消"
+					},
+				},
+				mounted: function() {},
+				methods: {
+					confirm_check:function(){
+					},
+					confirm_cancel:function(){
+						this.confirm.show = false;
+					},
+					back:function(){
+						window.location.href.back()
+					},
+					changeState:function(){
+						if(this.rightText=='编辑'){
+							this.rightText='完成'
+						}else{
+							this.rightText='编辑'
+						}
+					},
+					haveThisData:function(id){
+						for (var i=0;i<this.selectData.length;i++) {
+							if(this.selectData[i]==id){
+								return true
+							}
+						}
+						return false
+					},
+					selectOrUnselect:function(id){
+						if(this.rightText=='完成'){
+							for (var i=0;i<this.selectData.length;i++) {
+								if(this.selectData[i]==id){
+									this.selectData.splice(i,1)
+									return
+								}
+							}
+							this.selectData.push(id)
+						}else{
+							console.log("click=")
+						}
+					},
+					cancel:function(t){
+						var _this=this;
+						if(t=="select"&&_this.selectData.length==0){
+							return
+						}
+						_this.confirm.show = true;
+						_this.confirm_check=function(){
+							switch (t){
+								case 'all':
+								    _this.retData=[];
+									break;
+								case 'select':
+									JSON.parse(JSON.stringify(_this.selectData)).forEach(function(value,index){
+										for (var i=0;i<_this.retData.length;i++) {
+											if(_this.retData[i].id==value){
+												_this.retData.splice(i,1)
+											}
+										}
+									})
+									break;
+								default:
+									break;
+							}
+							_this.selectData = [];
+							_this.confirm.show = false;
+						}
+					}
+				},
+				watch: {
+					rightText:function(nl,ol){
+						if(nl=="编辑"){
+							this.selectData = [];
+						}else{
+							
+						}
+					},
+					retData:function(nl,ol){
+						if(nl.length==0){
+							this.rightText="编辑"
+						}
+					}
+				},
+			});
+		</script>
+	</body>
+
+</html>

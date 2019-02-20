@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>开始游戏</title>
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="开始游戏" theme="light"></header-vue>
+			<div class="wbf-1  d-wb wbo-v wb-c bc-505050" >
+			    <div class="w-300 h-260 bc-fff br-5 bs-bb p-0015 d-wb wbo-v wb-c">
+			    	<div @click="showSelect=!showSelect" class="d-wb wba-c w100 fs-15 mb-10">
+			    		<div class="">
+			    			转出账户：
+			    		</div>
+						<div class="h-40 wbf-1 br-5 b-1-999 c-CDAC67 d-wb wb-c">
+							{{selectData.api_title}}
+						</div>
+			    	</div>
+					<div class="d-wb wba-c w100 fs-15 mb-10">
+						<div class="">
+							账户余额：
+						</div>
+						<div class="h-40 wbf-1 br-5 b-1-999 c-CDAC67 d-wb wb-c">
+							{{selectData.money}}
+						</div>
+					</div>
+					<div class="d-wb wba-c w100 fs-15 mb-10">
+						<div class="d-wb wba-c">
+						转入[<span class="c-CDAC67">{{pingtai.api_title}}电子</span>]：
+						</div>
+						<div class="h-40 wbf-1 br-5 b-1-999 c-CDAC67 d-wb wb-c">
+							<input v-if="canChange" v-model="zhuanzhang" type="text" class="h-30 lh-30 d-b wbf-1 p-0005 bs-bb o-n" placeholder="请输入转入金额"/>
+							<input v-else readonly="readonly" v-model="zhuanzhang" type="text" class="h-30 lh-30 d-b wbf-1 p-0005 bs-bb o-n" placeholder="请输入转入金额"/>
+						</div>
+					</div>
+					<div v-if="canChange==false" class="ta-c h-20 d-wb wb-c fs-13 c-212121">
+						活动账户需要一次性转账
+					</div>
+					<div class="d-wb wba-c w100 fs-15 mt-20 c-fff">
+						<div @click="ajaxDataFun" class="h-32 wbf-1 b-top-CCAC67-EECE8A d-wb wb-c br-5">
+							确定转入
+						</div>
+						<div class="w-16">
+							
+						</div>
+						<div @click="ajaxData1" class="h-32 wbf-1 b-top-34AAE1-4BBCF1 d-wb wb-c br-5">
+							直接游戏
+						</div>
+					</div>
+			    </div>
+			</div>
+			<div v-if="showSelect"  class="p-f l-0 t-0 w100 h100 bc-00000000050 d-wb wbo-v wbp-e">
+				<div @click.stop="showSelect=!showSelect" class="p-0015 d-wb wbp-e wba-c h-40 bc-e5e5e5 fs-14 c-212121">
+					取消
+				</div>
+				<div  class="bc-fff h-350 p-0015 w100 fs-15 o-a bs-bb">
+					 <div @click="selectData=ret;showSelect=!showSelect;" v-if="ret.type!=1&&(ret.mark==''||ret.mark.indexOf(pingtai.api_title)!=-1)" v-for="ret in zhuanchuList" class="bb-1-e5e5e5 h-40 d-wb wba-c">
+					 	<div class="fs-15">
+					 		{{ret.api_title}}
+					 	</div>
+					 	<div  class="fs-10 c-CCAC67 ml-4 wbf-1 ml-10">
+					 		 (可用余额 {{ret.money}}) 
+					 	</div>
+						<div v-if="ret.money>=0" class="fs-10 c-666">
+							{{ret.mark}}
+						</div>
+						<div v-else class="fs-10 c-666">
+							暂无数据
+						</div>
+					 </div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var pingtai =JSON.parse(parseQueryString().pingtai||'{}');
+			pingtai.moeny="--,--";
+			pingtai.ajaxMoney=false;
+			pingtai.type=1;
+			pingtai.mark="";
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					gameData:JSON.parse(parseQueryString().data||'{}'),
+// 					{
+// 						"id": 3570,
+// 						"name": "棋圣",
+// 						"tcgGameCode": "2",
+// 						"productCode": "CQ9",
+// 						"img": "/images/wcg_game_cq9_1/2.png",
+// 						"created_at": "2019-01-09 18:47:27",
+// 						"updated_at": "2019-01-10 12:25:05"
+// 					}
+					pingtai:pingtai,
+// 					{
+// 						"id": 272,
+// 						"api_name": null,
+// 						"api_title": "CQ9",
+// 						"api_type": 0,
+// 						"created_at": "2017-02-03 09:17:51",
+// 						"updated_at": "2019-01-25 11:11:44"
+// 					}
+					nowIndex: 0,
+					showSelect:false,
+					selectData:{
+						id:"",
+						api_title:"",
+						money:"0",
+						type:""
+					},
+					zhuanchuList:[{
+						id:0,
+						api_title:"主账户",
+						type:0,//0主账户,1平台账户,2活动账户
+						mark:"",
+						money:"--.--",
+						ajaxMoney:false,
+					}],
+					canChange:true, //是否能够修改金额,活动账户需要一次性转出
+					zhuanzhang:"",//输入金额
+					cacheDate:{},//生成系列数据
+					canNext:true,
+				},
+				mounted: function() {
+					if(this.pingtai.api_title == 'PT'){
+						document.write("<script type='text/javascript' src='https://login.greenjade88.com/jswrapper/integration.js.php?casino=greenjade88'><\/script>");
+					}
+					this.selectData = this.zhuanchuList[0];
+					this.getZhuanchu();
+					this.zhuanchuList.push(this.pingtai);
+				},
+				methods: {
+					ajaxData1:function(){  //直接玩游戏
+						if(this.canNext==true){
+							this.canNext = false;
+						}else{
+							return
+						}
+					    var value = {
+							api_code:this.pingtai.api_title
+					    } 
+						if(typeof this.gameData.tcgGameCode != 'undefined'){
+							value.game_type=this.gameData.tcgGameCode;
+						}
+						//var dirUrl = ""
+						apiajax({
+							url:"/api/user/start_game",
+							method:"get",
+							data:{
+								values:value
+							},
+							async:false,
+						},function(ret,err){
+							setTimeout(function(){
+								v.canNext = true;
+							},1000);
+							if(err&&err.status_code>400){
+								alert(error.message)
+							}else{
+								if(ret&&ret.url){
+									if(v.pingtai.api_title == 'PT'){
+										iapiSetClientPlatform("mobile&deliveryPlatform=HTML5");
+										var realMode = 1;
+										iapiLogin(ret.api_name, ret.api_password, 1, "en");
+									}
+									window.open(ret.url);
+									apicloseWin();
+// 									var tempwindow=window.open('_blank');
+// 									tempwindow.location=ret.url;
+								}else{
+									alert("进入错误!")
+								}
+							}
+						},1);
+
+						// if(!!dirUrl){
+						// 	window.open(dirUrl)
+						// }
+					},
+					ajaxDataFun:function(){  //选择转出
+						if(!this.zhuanzhang>=1){
+							alert("请输入正确的转账金额!")
+							return
+						}
+						var t = 0;
+						if(this.selectData.type==2){
+							t = 1
+						}
+						if(this.selectData.type==0){
+							t = 2
+						}
+						if(this.selectData.type==1){
+							t = 3
+						}
+						apiajax({
+							url:"/api/post_transfer",
+							method:"post",
+							data:{
+								values:{
+									account1:this.selectData.id,
+									account2:this.pingtai.id,
+									money:this.zhuanzhang,
+									type:t,
+								}
+							},
+							async:false,
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								alert(err.message)
+							}else{
+								//转入后直接进入游戏
+								v.ajaxData1();
+							}
+						},1);
+					},
+					getZhuanchu:function(){
+						var _this = this;
+						apiajax({
+							url:"/api/user/list/activity",
+							method:"get",
+							data:{
+								values:{
+									include:"activity.platform"
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.zhuanchuList = v.zhuanchuList.concat(ret.data.map(function(value,index){
+									try{
+										var time = value.created_at;
+										if(typeof v.cacheDate[time] =='undefined'){
+											_this.cacheDate[time] = 0
+										}
+										var tts = time.split(" ")[0].split("-");
+										_this.cacheDate[time]++;
+										value.api_title=value.type +"赠送"+tts[1]+""+tts[2]+"-"+_this.cacheDate[time]
+									}catch(e){
+										value.api_title = value.type+"赠送账户"+(index+1)
+									}
+									value.type=2
+									value.mark = ''
+									value.activity.platform.data.forEach(function(value1,index1,arr){
+										if(index1!=arr.length-1){
+											value.mark += value1.api_name +"/"
+										}else{
+											value.mark += value1.api_name 
+										}
+									});
+									value.money = value.count_money
+									value.ajaxMoney = true;
+									return value
+								}));
+							}
+						},1);
+					}
+				},
+				watch:{
+					"selectData":{
+						handler:function(nl,ol){
+							if(nl.type==2){ //活动账户一次性转出
+								this.zhuanzhang = parseInt(nl.money);
+								this.canChange = false;
+							}else{
+								this.zhuanzhang = "";
+								this.canChange = true;
+							}
+						},
+						deep:true,
+					},
+					zhuanchuList:function(nl,ol){
+						nl.map(function(value,index){
+							if(value.ajaxMoney==false){  //主账户金额
+								value.ajaxMoney=true
+								if(value.type==0){
+									apiajax({
+										url:"/api/user",
+										method:"get",
+										data:{
+											values:{}
+										}
+									},function(ret,err){
+										if(err&&err.status_code>400){
+											
+										}else{
+											value.money = ret.money;
+										}
+									},2);
+								}
+							}
+						})
+					},
+					zhuanzhang:function(nl,ol){
+						var data = parseInt(((nl+'').match(/\d/g)||[0]).join(""));
+						if(this.selectData.money >  0){
+							if(data>=this.selectData.money){
+								this.zhuanzhang = parseInt(this.selectData.money)
+							}
+						}
+					}
+				},
+			});
+		</script>
+	</body>
+
+</html>

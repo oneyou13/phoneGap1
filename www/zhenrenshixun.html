@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>真人视讯</title>
+		<link href="css/swiper.min.css" rel="stylesheet" />
+		<link href="css/api.css" rel="stylesheet" />
+		<script src="js/swiper.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/api.js"></script>
+		<style>
+			#certify {
+				position: relative;
+				width: 100%;
+				margin: 0 auto;
+			}
+			
+			#certify .swiper-slide {
+				width: 27rem;
+				background: #fff;
+				overflow:inherit;
+				overflow: hidden;
+			}
+			/*向下*/
+			.triangle_border_down{
+			    width:0;
+			    height:0;
+			    border-width:1.2rem 0.7rem 0 0.7rem ;
+			    border-style:solid;
+			    border-color:#CCAC67 transparent transparent transparent;/*灰 透明 透明 */
+			    position:absolute;
+			    top: 3.95rem;
+			    left: 3.4rem;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="真人视讯" theme="light"></header-vue>
+			<div class="d-wb wb-c h-40 bc-0B102A">
+				<div class="w-75 h-40 d-wb wb-c wbo-v">
+					<tav-vue :index="nowIndex"></tav-vue>
+				</div>
+				<div class="w-75 h-40 d-wb wb-c wbo-v bc-CCAC67  p-r">
+					<tav-vue :index="nowIndex+1"></tav-vue>
+					<div class="triangle_border_down zi-30">
+
+					</div>
+				</div>
+				<div class="w-75 h-40 d-wb wb-c wbo-v">
+					<tav-vue :index="nowIndex+2"></tav-vue>
+				</div>
+			</div>
+			<div class="wbf-1  p-r o-h">
+				<div class="h110 w110 bs-c p-a l--20 t--20 zi-10 o-h bs-c" v-bind:style="{'background-image':bgcImg}" style="-webkit-filter:blur(40px)">
+					
+				</div>
+				<div class="h100 w100 p-a l-0 d-wb wb-c zi-20">
+					<div id="certify" class="w100 h-360 ">
+						<div class="swiper-container h100 w100">
+							<div class="swiper-wrapper">
+								<div onclick="openWin('BBIN')" class="swiper-slide d-wb wb-c wbo-v br-5 o-h">
+									<img src="images/zhenrenshixun/img.png" class="h-275 w-275" >
+									<div class="h-85 d-wb wb-c wbo-v p-r w-275">
+										<img src="images/zhenrenshixun/play@2x.png" class="w-110 p-a t--15 br-5 l-83 wbs-00002003-00000000030" >
+										<div class="fs-14 c-0B102A">
+											全球最大真人在线博彩网站
+										</div>
+										<div class="fs-14 c-999 mt-2">
+											美女荷官在线发牌
+										</div>
+									</div>
+								</div>
+								<div onclick="openWin('AG')" class="swiper-slide d-wb wb-c wbo-v br-5 o-h">
+									<img src="images/zhenrenshixun/img2.png" class="h-275 w-275" >
+									<div class="h-85 d-wb wb-c wbo-v p-r w-275">
+										<img src="images/zhenrenshixun/play@2x.png" class="w-110 p-a t--15 br-5 l-83 wbs-00002003-00000000030" >
+										<div class="fs-14 c-0B102A">
+											AV女优近距离接触
+										</div>
+										<div class="fs-14 c-999 mt-2">
+											实地真人现场 流畅视讯体验
+										</div>
+									</div>
+								</div>
+								<div onclick="openWin('MAYA')" class="swiper-slide d-wb wb-c wbo-v br-5 o-h">
+									<img src="images/zhenrenshixun/img3.png" class="h-275 w-275" >
+									<div class="h-85 d-wb wb-c wbo-v p-r w-275">
+										<img src="images/zhenrenshixun/play@2x.png" class="w-110 p-a t--15 br-5 l-83 wbs-00002003-00000000030" >
+										<div class="fs-14 c-0B102A">
+											AV360°全方位视角的真实赌场环境
+										</div>
+										<div class="fs-14 c-999 mt-2">
+											足不出户即能体验原汁原味的游戏乐趣
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<foot-vue
+				:index="0"
+				path=""
+			></foot-vue>
+		</div>
+		<script type="text/x-template" id="tabDom">
+			<div class="d-wb wb-c wbo-v">
+				<img v-show="index%3==0" v-bind:src="imagePath[0]" class="h-17"/>
+				<img v-show="index%3==1" v-bind:src="imagePath[1]" class="h-17"/>
+				<img v-show="index%3==2" v-bind:src="imagePath[2]" class="h-17"/>
+				<div  class="d-wb wb-c c-fff fs-10 w-42 mt-3">
+					{{title[index%3]}}
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			Vue.component("tav-vue",{
+				data:function(){
+					return {
+						title:['玛雅视讯','BB视讯','AG视讯'],
+						imagePath:['images/zhenrenshixun/mayalogo.png',"images/zhenrenshixun/bbin.png","images/zhenrenshixun/ag.png"],
+					}
+				},
+				props:["index"],
+				template:tabDom.innerHTML
+			});
+		</script>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+				},
+				computed:{
+					bgcImg:function(){
+						if(this.nowIndex == 0){
+							return 'url(images/zhenrenshixun/img.png)'
+						}
+						if(this.nowIndex == 1){
+							return 'url(images/zhenrenshixun/img2.png)'
+						}
+						if(this.nowIndex == 2){
+							return 'url(images/zhenrenshixun/img3.png)'
+						}
+					}
+				},
+				mounted: function() {
+					var _this = this;
+					window.certifySwiper = new Swiper('#certify .swiper-container', {
+						watchSlidesProgress: true,
+						slidesPerView: 'auto',
+						centeredSlides: true,
+						loop: true,
+						loopedSlides: 5,
+						autoplay: true,
+						on: {
+							slideChange: function () {
+								_this.nowIndex = this.activeIndex%3;
+						    },
+							progress: function(progress) {
+								for (i = 0; i < this.slides.length; i++) {
+									var slide = this.slides.eq(i);
+									var slideProgress = this.slides[i].progress;
+									modify = 1;
+									if (Math.abs(slideProgress) > 1) {
+										modify = (Math.abs(slideProgress) - 1) * 0.3 + 1;
+									}
+									translate = slideProgress * modify * (4) + 'rem';
+									scale = 1 - Math.abs(slideProgress) / 6;
+									zIndex = 999 - Math.abs(Math.round(10 * slideProgress));
+									slide.transform('translateX(' + translate + ') scale(' + scale + ')');
+									slide.css('zIndex', zIndex);
+									slide.css('opacity', 1);
+									if (Math.abs(slideProgress) > 3) {
+										slide.css('opacity', 0);
+									}
+								}
+							},
+							setTransition: function(transition) {
+								for(var i = 0; i < this.slides.length; i++) {
+									var slide = this.slides.eq(i)
+									slide.transition(transition);
+								}
+							}
+						}
+					})
+				},
+				methods: {
+					
+				}
+			});
+			function openWin(winName){
+				checkLoginStatus();
+				if(winName == 'BBIN'){
+					var ret = 	{
+						"id": 0,
+						"name": "",
+						"tcgGameCode": undefined,
+						"productCode": "",
+						"img": "",
+						"created_at": "",
+						"updated_at": ""
+					}
+					var  pingtai =  {
+						"id": 252,
+						"api_name": null,
+						"api_title": "BBIN",
+						"api_type": 0,
+						"created_at": "2017-02-03 09:17:51",
+						"updated_at": "2019-01-27 23:47:01"
+					};
+					window.location.href = "./playgame.html?data="+encodeURIComponent(JSON.stringify(ret))+"&pingtai=" +encodeURIComponent(JSON.stringify(pingtai))
+				}else if(winName == 'MAYA'){
+					alert("平台暂未开放!");
+					return;
+					var ret = 	{
+						"id": 0,
+						"name": "",
+						"tcgGameCode": undefined,
+						"productCode": "",
+						"img": "",
+						"created_at": "",
+						"updated_at": ""
+					}
+					var  pingtai =  {
+						"id": 281,
+						"api_name": null,
+						"api_title": "MAYA",
+						"api_type": 0,
+						"created_at": "2017-02-03 09:17:51",
+						"updated_at": "2019-01-27 23:47:01"
+					};
+					window.location.href = "./playgame.html?data="+encodeURIComponent(JSON.stringify(ret))+"&pingtai=" +encodeURIComponent(JSON.stringify(pingtai))
+				}else{
+					alert("平台暂未开放!")
+				}
+			}
+		</script>
+	</body>
+
+</html>

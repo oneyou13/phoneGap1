@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>转账</title>
+		<link href="../css/api.css" rel="stylesheet" />
+		<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/api.js"></script>
+		<style>
+			::-webkit-scrollbar{
+				display: none;
+			}
+			::-webkit-input-placeholder{
+				color: #eee;
+			}
+		</style>
+		<style rem="10">
+
+		</style>
+	</head>
+
+	<body>
+		<div class="d-wb wbo-v h100 w100" id="bVue">
+			<header-vue title="转账" ></header-vue>
+			<div class="wbf-1 bc-F5F5F5">
+				<div class="mt-10 fs-15">
+					<div class="h-40 d-wb wba-c p-0016 bc-fff bb-1-F5F5F5">
+						<div class="fs-15 fw-800 mr-15">
+							转出账户:
+						</div>
+						<div @click="showSelect=!showSelect" class="d-wb wba-c wbf-1 c-CCAC67">
+							<div class="fs-15">
+								{{selectData.api_title}}
+							</div>
+							<div v-if="selectData.api_title!=''" class="fs-10 c-CCAC67 ml-4">
+								 (可用余额 {{selectData.money}}) 
+							</div>
+							<div v-else class="fs-15 c-CCAC67 ml-4">
+								请选择
+							</div>
+							<div class="wbf-1">
+								
+							</div>
+							<img src="../images/user/icon_arrow2@2x.png" class="h-10">
+						</div>
+					</div>
+					<div class="h-40 d-wb wba-c p-0016 bc-fff bb-1-F5F5F5">
+						<div class="fs-15 fw-800 mr-15">
+							转入账户:
+						</div>
+						<div @click="showSelect1=!showSelect1" class="d-wb wba-c wbf-1 c-CCAC67">
+							<div class="fs-15">
+								{{selectData1.api_title}}
+							</div>
+							<div v-if="selectData1.api_title!=''" class="fs-10 c-CCAC67 ml-4">
+								 (可用余额 {{selectData1.money}}) 
+							</div>
+							<div v-else class="fs-15 c-CCAC67 ml-4">
+								请选择
+							</div>
+							<div class="wbf-1">
+								
+							</div>
+							<img src="../images/user/icon_arrow2@2x.png" class="h-10">
+						</div>
+					</div>
+					<div class="h-57">
+						<div v-if="selectData.money>=0" class="p-0015 mt-15 d-wb wba-c">
+							<div class="fs-10 fw-800">
+								转出账户可用余额:
+							</div>
+							<div class="fs-15 c-34AAE1 ml-2">
+								{{selectData.money}}
+							</div>
+						</div>
+						<div v-else class="p-0015 mt-15 d-wb wba-c">
+							<div class="fs-10 fw-800">
+								暂未查询到数据
+							</div>
+						</div>
+					</div>
+					<div class="h-120 bc-fff d-wb wbo-v">
+						<div v-if="canChange" class="h-40 d-wb wba-c p-0015 fw-800 c-0B102A bb-1-f5f5f5">
+							转出金额:
+						</div>
+						<div v-else class="h-40 d-wb wba-c p-0015 fw-800 c-0B102A bb-1-f5f5f5">
+							转出金额:(tip:活动账户一次性转出)
+						</div>
+						<div class="wbf-1 d-wb wba-c w100">
+							<div class="w-80">
+								
+							</div>
+							<div class="d-wb wba-c wbf-1">
+								<input v-if="canChange" type="text" v-model="zhuanzhang" class="fs-36 h-36 lh-36 o-n d-b wbf-1" placeholder="请输入转账金额" />
+								<input v-else type="text" readonly="readonly" v-model="zhuanzhang" class="fs-36 h-36 lh-36 o-n d-b wbf-1" placeholder="请输入转账金额" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="zhuanzhang<=selectData.money&&selectData.money>=1" @click="ajaxDataFun" class="m-0044 mt-50  h-40 d-wb wb-c b-top-CCAC67-EECE8A fs-18 fw-800">
+					下一步
+				</div>
+				<div v-else  class="m-0044 mt-50  h-40 d-wb wb-c bc-eee c-ddd fs-18 fw-800">
+					不能转账
+				</div>
+			</div>
+			<div v-if="showSelect"  class="p-f l-0 t-0 w100 h100 bc-00000000050 d-wb wbo-v wbp-e">
+				<div @click.stop="showSelect=!showSelect" class="p-0015 d-wb wbp-e wba-c h-40 bc-e5e5e5 fs-14 c-212121">
+					取消
+				</div>
+				<div  class="bc-fff h-350 p-0015 w100 fs-15 o-a bs-bb">
+					 <div @click="selectData=ret;showSelect=!showSelect;" v-for="ret in zhuanchuList" class="bb-1-e5e5e5 h-40 d-wb wba-c">
+					 	<div class="fs-15">
+					 		{{ret.api_title}}
+					 	</div>
+					 	<div  class="fs-10 c-CCAC67 ml-4 wbf-1 ml-10">
+					 		 (可用余额 {{ret.money}}) 
+					 	</div>
+						<div v-if="ret.money>=0" class="fs-10 c-666">
+							{{ret.mark}}
+						</div>
+						<div v-else class="fs-10 c-666">
+							暂无数据
+						</div>
+					 </div>
+				</div>
+			</div>
+			<div v-if="showSelect1"  class="p-f l-0 t-0 w100 h100 bc-00000000050 d-wb wbo-v wbp-e">
+				<div @click.stop="showSelect1=!showSelect1" class="p-0015 d-wb wbp-e wba-c h-40 bc-e5e5e5 fs-14 c-212121">
+					取消
+				</div>
+				<div  class="bc-fff h-350 p-0015 w100 fs-15 o-a bs-bb">
+					 <div @click="selectData1=ret;showSelect1=!showSelect1;" v-for="ret in zhuanruList" class="bb-1-e5e5e5 h-40 d-wb wba-c">
+					 	<div class="fs-15">
+					 		{{ret.api_title}}
+					 	</div>
+					 	<div  class="fs-10 c-CCAC67 ml-4 wbf-1 ml-10">
+					 		 (可用余额 {{ret.money}}) 
+					 	</div>
+						<div v-if="ret.money>=0" class="fs-10 c-666">
+							{{ret.mark}}
+						</div>
+						<div v-else class="fs-10 c-666">
+							暂无数据
+						</div>
+					 </div>
+				</div>
+			</div>
+			<foot-vue
+				:index="3"
+				path="../"
+			></foot-vue>
+		</div>
+		<script>
+			var v = new Vue({
+				el: "#bVue",
+				data: {
+					nowIndex: 0,
+					showSelect:false,
+					showSelect1:false,
+					zhuanchuList:[{
+						id:0,
+						api_title:"主账户",
+						type:0,//0主账户,1平台账户,2活动账户
+						mark:"",
+						money:"--.--",
+						ajaxMoney:false,
+					}],
+					zhuanruList:[],
+					selectData:{
+						id:"",
+						api_title:"",
+						money:"0",
+						type:""
+					},
+					selectData1:{
+						id:"",
+						api_title:"",
+						money:"",
+						type:""
+					},
+					zhuanzhang:"",//输入金额
+					canChange:true, //是否能够修改金额,活动账户需要一次性转出
+					cacheDate:{},//生成系列数据
+				},
+				mounted: function() {
+					this.getZhuanchu();
+				},
+				methods: {
+					ajaxDataFun:function(){
+						if(!this.zhuanzhang>=1){
+							alert("请输入正确的转账金额!")
+							return
+						}
+						var t = 0;
+						if(this.selectData.type==2){
+							t = 1
+						}
+						if(this.selectData.type==0){
+							t = 2
+						}
+						if(this.selectData.type==1){
+							t = 3
+						}
+						apiajax({
+							url:"/api/post_transfer",
+							method:"post",
+							data:{
+								values:{
+									account1:this.selectData.id,
+									account2:this.selectData1.id,
+									money:this.zhuanzhang,
+									type:t,
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								alert(err.message)
+							}else{
+								alert("转账成功!");
+								history.go(0);
+							}
+						},1);
+					},
+					getZhuanchu:function(){
+						var _this = this;
+						apiajax({
+							url:"/api/third_party_platform",
+							method:"get",
+							data:{
+								values:{}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.zhuanchuList = v.zhuanchuList.concat(ret.data.map(function(value,index){
+									value.type=1
+									value.mark = ''
+									value.money = '--.--'
+									value.ajaxMoney = false;
+									return value
+								}));
+							}
+						},1,false);
+						apiajax({
+							url:"/api/user/list/activity",
+							method:"get",
+							data:{
+								values:{
+									include:"activity.platform"
+								}
+							}
+						},function(ret,err){
+							if(err&&err.status_code>400){
+								
+							}else{
+								v.zhuanchuList = v.zhuanchuList.concat(ret.data.map(function(value,index){
+									try{
+										var time = value.created_at;
+										if(typeof v.cacheDate[time] =='undefined'){
+											_this.cacheDate[time] = 0
+										}
+										var tts = time.split(" ")[0].split("-");
+										_this.cacheDate[time]++;
+										value.api_title=value.type +"赠送"+tts[1]+""+tts[2]+"-"+_this.cacheDate[time]
+									}catch(e){
+										value.api_title = value.type+"赠送账户"+(index+1)
+									}
+									value.type=2
+									value.mark = ''
+									value.activity.platform.data.forEach(function(value1,index1,arr){
+										if(index1!=arr.length-1){
+											value.mark += value1.api_name +"/"
+										}else{
+											value.mark += value1.api_name 
+										}
+									});
+									value.money = value.count_money
+									value.ajaxMoney = true;
+									return value
+								}));
+							}
+						},1,false);
+					}
+				},
+				watch:{
+					"selectData":{
+						handler:function(nl,ol){
+							if(nl.type==0){
+								this.zhuanruList = JSON.parse(JSON.stringify(this.zhuanchuList)).filter(function(value,index){
+									return value.type==1
+								})
+							}
+							if(nl.type==1){
+								this.zhuanruList = JSON.parse(JSON.stringify(this.zhuanchuList)).filter(function(value,index){
+									return value.type==0
+								})
+							}
+							if(nl.type==2){
+								var pingtai = nl.mark.split(/\//g)||[];
+								if(pingtai.length<=1&&pingtai[0]==''){
+									this.zhuanruList = JSON.parse(JSON.stringify(this.zhuanchuList)).filter(function(value,index){
+										return value.type==1
+									})
+								}else{
+									this.zhuanruList = JSON.parse(JSON.stringify(this.zhuanchuList)).filter(function(value,index){
+										return value.type==1
+									}).filter(function(value,index){
+										return pingtai.indexOf(value.api_title) != -1
+									});
+								}
+							}
+							if(this.zhuanruList.length>=1){
+								this.selectData1=JSON.parse(JSON.stringify(this.zhuanruList[0]))
+							}else{
+								this.selectData1={
+									id:"",
+									api_title:"",
+									money:"",
+									type:""
+								}
+							}
+							if(nl.type==2){
+								this.zhuanzhang = parseInt(nl.money);
+								this.canChange = false;
+							}else{
+								this.zhuanzhang = "";
+								this.canChange = true;
+							}
+						},
+						deep:true,
+					},
+					zhuanchuList:function(nl,ol){
+						nl.map(function(value,index){
+							if(value.ajaxMoney==false){
+								value.ajaxMoney=true
+								if(value.type==0){ //主账户的钱
+									apiajax({
+										url:"/api/user",
+										method:"get",
+										data:{
+											values:{}
+										}
+									},function(ret,err){
+										if(err&&err.status_code>400){
+											
+										}else{
+											value.money = ret.money;
+										}
+									},2,false);
+								}else if(value.type==1){ //平台账户的钱
+									apiajax({
+										url:"/api/member_game_money",
+										method:"get",
+										data:{
+											values:{
+												game_id:value.id
+											}
+										}
+									},function(ret,err){
+										if(err&&err.status_code>400){
+											
+										}else{
+											value.money = ret.money;
+										}
+									},2,false);
+								}
+							}
+						})
+					},
+					zhuanzhang:function(nl,ol){
+						this.zhuanzhang = parseInt(((nl+'').match(/\d/g)||[0]).join(""))
+					}
+				},
+			});
+		</script>
+	</body>
+
+</html>
